@@ -146,4 +146,9 @@ async def wall(ctx, arg: str=None):
     
     {arg}```""")
 
+@bot.command()
+async def pwd(ctx):
+    current_path = os.getcwd()
+    await ctx.send(f"{current_path}")
+
 bot.run(token)
