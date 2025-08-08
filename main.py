@@ -179,6 +179,9 @@ async def _8ball(ctx: discord.Interaction, question: str):
         "Outlook not so good.",
         "Very doubtful."
     ]
-    await ctx.response.send_message(f'Question: `{question}`\nAnswer: `{random.choice(responses)}`', ephemeral=True)
+    await ctx.response.send_message(
+        f'Question: `{question}`\nAnswer: `{random.choice(responses)}`',
+        ephemeral=True
+    )
 
 bot.run(token)
