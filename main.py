@@ -9,7 +9,9 @@ import asyncio
 dotenv = load_dotenv(".env")
 token = os.getenv("TOKEN")
 
-bot = commands.Bot(command_prefix="$ ", intents=discord.Intents().all())
+game = discord.Streaming(name="Dr. Pepper Guy is a W", url="https://www.youtube.com/stormyxvreal")
+
+bot = commands.Bot(command_prefix="$ ", intents=discord.Intents().all(), activity=game, status=discord.Status.idle)
 
 @bot.event
 async def on_ready():
