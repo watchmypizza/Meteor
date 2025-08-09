@@ -1,2 +1,6 @@
 .idx/
 .env
+.Tux/
+.__pycache__/
+.Commands/__pycache__/
+.Events/__pycache__/
