@@ -8,7 +8,8 @@ FORBIDDEN_FILES = [
     "__pycache__",
     ".gitignore",
     "Tux",
-    "dev.nix"
+    "dev.nix",
+    ".."
 ]
 
 class main(commands.Cog):
