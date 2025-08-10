@@ -9,7 +9,7 @@ import asyncio
 dotenv = load_dotenv(".env")
 token = os.getenv("TOKEN")
 
-game = discord.Streaming(name="Dr. Pepper Guy is a W", url="https://www.youtube.com/stormyxvreal")
+game = discord.Game(name="StormyXV on YouTube")
 
 bot = commands.Bot(command_prefix="$ ", intents=discord.Intents().all(), activity=game, status=discord.Status.idle)
 

@@ -9,7 +9,8 @@ FORBIDDEN_FILES = [
     ".gitignore",
     "Tux",
     "dev.nix",
-    ".."
+    "..",
+    ".log"
 ]
 
 class main(commands.Cog):
