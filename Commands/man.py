@@ -26,6 +26,12 @@ class manual(commands.Cog):
                 await ctx.send("`/slash` For the active developer badge, as this bot focuses on Chat-Commands")
             case "wall":
                 await ctx.send("`$ wall <Message>` Post something into the announcements channel, in the linux broadcast style.")
+            case "usermod":
+                await ctx.send("`$ usermod -l <New Nickname> <User>` Change a user's nickname.")
+            case "membercount":
+                await ctx.send("`/membercount` Display the amount of members in the server.")
+            case "level":
+                await ctx.send("`/level <(Optional) User>` Display a user's level and xp or your own level and xp.")
 
 async def setup(bot):
     await bot.add_cog(manual(bot))
