@@ -10,7 +10,8 @@ FORBIDDEN_FILES = [
     "Tux",
     "dev.nix",
     "..",
-    ".log"
+    ".log",
+    ".json"
 ]
 
 class main(commands.Cog):
