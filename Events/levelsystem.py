@@ -9,7 +9,7 @@ from typing import Optional
 class levelsystem(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.levels = "levels.json"
+        self.levels = "JSONS/levels.json"
         self.time_now = datetime.now().strftime("%H:%M")
     
     def read(self):

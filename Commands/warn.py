@@ -9,7 +9,7 @@ from typing import Optional
 class warncmd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.warnings = "warnings.json"
+        self.warnings = "JSONS/warnings.json"
         self.moderator_role_id = 1404479574435299328
 
     def read(self):
