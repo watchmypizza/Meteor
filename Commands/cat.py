@@ -18,7 +18,7 @@ class main(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    @commands.cooldown(rate=300, per=60, type=commands.BucketType.user)
+    @commands.cooldown(rate=1, per=300, type=commands.BucketType.user)
     async def cat(self, ctx, filedestination: str):
         if any(forbidden in filedestination for forbidden in FORBIDDEN_FILES):
             await ctx.send("You cannot request that file!")

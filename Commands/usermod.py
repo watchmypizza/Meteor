@@ -7,7 +7,7 @@ class usercmd(commands.Cog):
 
     @commands.command()
     async def usermod(self, ctx, arg: str, newuser: str, olduser: discord.Member):
-        if not ctx.author.guild_permissions.administrator:
+        if not ctx.author.guild_permissions.moderate_members:
             await ctx.send("You do not have permission to use this command!")
             return
 

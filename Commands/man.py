@@ -32,6 +32,14 @@ class manual(commands.Cog):
                 await ctx.send("`/membercount` Display the amount of members in the server.")
             case "level":
                 await ctx.send("`/level <(Optional) User>` Display a user's level and xp or your own level and xp.")
+            case "warn":
+                await ctx.send("`/warn <User> <Reason>` Warn a user for a reason.")
+            case "warnings":
+                await ctx.send("`/warnings <User>` View warnings for a user.")
+            case "removewarn":
+                await ctx.send("`/removewarn <User> <Warning Number>` Remove a specific warning for a user.")
+            case _:
+                await ctx.send("That command does not exist.")
 
 async def setup(bot):
     await bot.add_cog(manual(bot))
