@@ -25,10 +25,12 @@ async def on_ready():
         for filename in os.listdir("./Tasks"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"Tasks.{filename[:-3]}")
+                print(f"{filename} loaded")
         # Load Event Cogs
         for filename in os.listdir("./Events"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"Events.{filename[:-3]}")
+                print(f"{filename} loaded")
         # Sync commands
         synced = await bot.tree.sync()
         print("Synced " + str(len(synced)) + " commands")
