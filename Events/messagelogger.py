@@ -22,6 +22,9 @@ class messagelogger(commands.Cog):
         chat_logs = discord.utils.get(message.guild.channels, id=1403775143351943208)
         embed = create_embed(message.author, "deleted", message)
         await chat_logs.send(embed=embed)
+        if message.attachments:
+            files = [await attachment.to_file() for attachment in message.attachments]
+            await chat_logs.send(files=files)
     
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):

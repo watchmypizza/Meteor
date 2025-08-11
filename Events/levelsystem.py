@@ -49,6 +49,19 @@ class levelsystem(commands.Cog):
         data[str(message.author.id)]["xp"] -= 5
         self.write(data)
 
+    @commands.Cog.listener()
+    async def on_message_edit(self, before: discord.Message, after: discord.Message):
+        if before.author.id == self.bot.user.id:
+            return
+        
+        data = self.read()
+        if str(before.author.id) not in data:
+            data[str(before.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
+        
+        if len(str(before.content)) > len(str(after.content)):
+            data[str(before.author.id)]["xp"] -= 5
+            self.write(data)
+
     @app_commands.command(name="level", description="Check your level and xp")
     @app_commands.describe(user="The user to check the level of.")
     async def level(self, interaction: discord.Interaction, user: Optional[discord.Member]):
