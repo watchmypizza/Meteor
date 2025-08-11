@@ -30,4 +30,3 @@ class usercmd(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(usercmd(bot))
-    print("USERMOD cog loaded.")

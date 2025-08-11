@@ -13,4 +13,3 @@ class pwdCog(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(pwdCog(bot))
-    print("PWD cog loaded.")

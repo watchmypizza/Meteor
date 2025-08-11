@@ -40,5 +40,4 @@ class lscmd(commands.Cog):
             await ctx.send(f'An error occurred: {e}')
     
 async def setup(bot):
-    print("LS cog loaded.")
     await bot.add_cog(lscmd(bot))

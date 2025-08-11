@@ -52,4 +52,3 @@ class kickban(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(kickban(bot))
-    print("RM cog loaded.")

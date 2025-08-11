@@ -125,4 +125,3 @@ class warncmd(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(warncmd(bot))
-    print("WARNCMD cog loaded.")

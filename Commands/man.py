@@ -43,4 +43,3 @@ class manual(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(manual(bot))
-    print("MAN cog loaded.")

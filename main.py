@@ -20,6 +20,11 @@ async def on_ready():
         for filename in os.listdir("./Commands"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"Commands.{filename[:-3]}")
+                print(f"{filename} loaded")
+        # Load Task Cogs
+        for filename in os.listdir("./Tasks"):
+            if filename.endswith(".py"):
+                await bot.load_extension(f"Tasks.{filename[:-3]}")
         # Load Event Cogs
         for filename in os.listdir("./Events"):
             if filename.endswith(".py"):

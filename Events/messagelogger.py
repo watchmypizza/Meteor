@@ -34,4 +34,3 @@ class messagelogger(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(messagelogger(bot))
-    print("Message Logger event cog loaded.")

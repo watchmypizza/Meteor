@@ -20,4 +20,3 @@ class commanderrorhandler(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(commanderrorhandler(bot))
-    print("Error Handler event cog loaded.")

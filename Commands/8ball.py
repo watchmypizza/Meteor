@@ -36,5 +36,4 @@ class _8ball(commands.Cog):
         )
 
 async def setup(bot):
-    print("8ball Cog loaded.")
     await bot.add_cog(_8ball(bot))

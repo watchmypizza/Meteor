@@ -34,4 +34,3 @@ class main(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(main(bot))
-    print("CAT cog loaded.")

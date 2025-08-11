@@ -25,4 +25,3 @@ class memcount(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(memcount(bot))
-    print("MEMCOUNT cog loaded.")

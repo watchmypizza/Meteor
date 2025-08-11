@@ -21,4 +21,3 @@ class welcomer(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(welcomer(bot))
-    print("Welcomer event cog loaded.")

@@ -36,5 +36,4 @@ class clear(commands.Cog):
 
 
 async def setup(bot):
-    print("Clear cog loaded.")
     await bot.add_cog(clear(bot))

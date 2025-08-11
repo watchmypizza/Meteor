@@ -104,4 +104,3 @@ class levelsystem(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(levelsystem(bot))
-    print("LEVELSYSTEM cog loaded.")
