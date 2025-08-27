@@ -9,7 +9,7 @@ def create_embed(user: discord.Member, action, before: discord.Message, after: O
         )
     elif action == "edited":
         embed = discord.Embed(
-            description=f"{user.mention} has edited a message!\n\n`{before.content}`\nto\n`{after.content}`"
+            description=f"{user.mention} has edited a message!\n\n`{before.content}` -> `{after.content}`"
         )
     return embed
 
