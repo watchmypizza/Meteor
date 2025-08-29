@@ -38,6 +38,10 @@ class manual(commands.Cog):
                 await ctx.send("`/warnings <User>` View warnings for a user.")
             case "removewarn":
                 await ctx.send("`/removewarn <User> <Warning Number>` Remove a specific warning for a user.")
+            case "configure":
+                await ctx.send("`/configure <Option>` Configure the bot")
+            case "counting":
+                await ctx.send("`/counting <Option>` Configure counting")
             case _:
                 await ctx.send("That command does not exist.")
 

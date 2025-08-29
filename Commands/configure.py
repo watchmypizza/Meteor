@@ -21,7 +21,9 @@ class configure(commands.Cog):
                 "logging_channel": 0,
                 "welcomer_channel": 0,
                 "level_roles": [],
-                "staff_roles": []
+                "staff_roles": [],
+                "ann_channel": 0,
+                "bot_role": 0
             }
         
         return data
@@ -101,6 +103,38 @@ class configure(commands.Cog):
         await interaction.response.send_message(
             f"Added role {role.mention} for level {level}.", ephemeral=True
         )
+
+    @configure_group.command(name="announcement", description="The channel to post announcements in.")
+    @app_commands.describe(channel="The channel to send the announcements in")
+    async def announcemenets_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message(
+                "You do not have the necessary permissions to use this command.", ephemeral=True
+            )
+            return
+
+        csi = str(interaction.guild.id)
+        data = self.read(csi)
+        data[csi]["ann_channel"] = channel.id
+        self.write(data)
+        await interaction.response.send_message(
+            f"Set the announcements channel to {channel.mention}.", ephemeral=True
+        )
+    
+    @configure_group.command(name="botrole", description="The bot role to ignore when executing membercount.")
+    @app_commands.describe(role="The role to ignore when executing membercount.")
+    async def botrole_subcommand(self, interaction: discord.Interaction, role: discord.Role):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message(
+                "You do not have the necessary permissions to use this command.", ephemeral=True
+            )
+            return
+
+        csi = str(interaction.guild.id)
+        data = self.read(csi)
+        data[csi]["bot_role"] = role.id
+        self.write(data)
+        await interaction.response.send_message("Set the bot role to {}".format(role.mention), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(configure(bot))
