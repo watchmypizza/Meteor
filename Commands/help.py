@@ -1,18 +1,14 @@
 import discord
 from discord.ext import commands
 
-class help(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-    
-    @commands.command()
-    async def help(self, ctx):
+class CustomHelpCommand(commands.HelpCommand):
+    async def send_bot_help(self, mapping):
         embed = discord.Embed(
             title="Help",
             description="Please use the `$ man <command>` feature instead.",
             color=discord.Color.red()
         )
-        await ctx.send(embed=embed)
+        await self.get_destination().send(embed=embed)
 
 async def setup(bot):
-    await bot.add_cog(help(bot))
+    bot.help_command = CustomHelpCommand()
