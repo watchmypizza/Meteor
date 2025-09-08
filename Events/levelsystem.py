@@ -53,7 +53,10 @@ class levelsystem(commands.Cog):
 
         # Ensure user exists
         if user_id not in levels_data[server_id]:
-            levels_data[server_id][user_id] = {"xp": 0, "level": 0, "xp_needed": 50}
+            levels_data[server_id][user_id] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
+        
+        if levels_data[server_id][user_id]["level_lock"] == True:
+            return
 
         # Add XP
         leveled_up = False
@@ -102,6 +105,10 @@ class levelsystem(commands.Cog):
             return
 
         data = self.read(csi)
+        
+        if levels_data[server_id][user_id]["level_lock"] == True:
+            return
+
         if str(message.author.id) not in data[csi]:
             data[csi][str(message.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
         if data[csi][str(message.author.id)]["xp"] == 0:
@@ -118,6 +125,10 @@ class levelsystem(commands.Cog):
             return
         
         data = self.read(csi)
+
+        if levels_data[server_id][user_id]["level_lock"] == True:
+            return
+
         if str(before.author.id) not in data:
             data[csi][str(before.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
         
@@ -127,7 +138,8 @@ class levelsystem(commands.Cog):
             data[csi][str(before.author.id)]["xp"] -= 5
             self.write(data)
 
-    @app_commands.command(name="level", description="Check your level and xp")
+    levelgroup = app_commands.Group(name="level", description="Check your level and xp")
+    @levelgroup.command(name="show", description="Check your level and xp")
     @app_commands.describe(user="The user to check the level of.")
     async def level(self, interaction: discord.Interaction, user: Optional[discord.Member]):
         csi = str(interaction.guild.id)
@@ -171,6 +183,47 @@ class levelsystem(commands.Cog):
         )
         embed.set_footer(text="Today at " + self.time_now)
         await interaction.response.send_message(embed=embed)
+    
+    @levelgroup.command(name="lock", description="Lock a user's level.")
+    @app_commands.describe(user="THe user to level lock")
+    async def levellock(self, interaction: discord.Interaction, user: discord.Member):
+        if not interaction.user.guild_permissions.moderate_members:
+            await interaction.response.send_message("You do not have permission to use this command.")
+            return
+        
+        csi = str(interaction.guild.id)
+        if csi == None:
+            return
+        
+        data = self.read()
+        if str(user.id) not in data[csi]:
+            data[csi][str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
+        
+        data[csi][str(user.id)]["level_lock"] = not data[csi][str(user.id)]["level_lock"]
+        self.write(data)
+        if data[csi][str(user.id)]["level_lock"] == True:
+            await interaction.response.send_message("Level has been locked for user {}.".format(user.mention), ephemeral=True)
+        else:
+            await interaction.response.send_message("Level has been unlocked for user {}.".format(user.mention), ephemeral=True)
+    
+    @levelgroup.command(name="set", description="Set a user's level.")
+    @app_commands.describe(user="User to moderate", level="The level to set the user to.")
+    async def levelset(self, interaction: discord.Interaction, user: discord.Member, level: int):
+        if not interaction.user.guild_permissions.moderate_members:
+            await interaction.response.send_message("You do not have permission to use this command.")
+            return
+        
+        csi = str(interaction.guild.id)
+        if csi == None:
+            return
+
+        data = self.read(csi)
+        if str(user.id) not in data[csi]:
+            data[csi][str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
+
+        data[csi][str(user.id)]["level"] = level
+        self.write(data)
+        await interaction.response.send_message("Level has been set for user {} to {}.".format(user.mention, level), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(levelsystem(bot))

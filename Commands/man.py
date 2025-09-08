@@ -42,6 +42,8 @@ class manual(commands.Cog):
                 await ctx.send("`/configure <Option>` Configure the bot")
             case "counting":
                 await ctx.send("`/counting <Option>` Configure counting")
+            case "latency":
+                await ctx.send("`/latency` Measure your latency between you and the bot.")
             case _:
                 await ctx.send("That command does not exist.")
 
