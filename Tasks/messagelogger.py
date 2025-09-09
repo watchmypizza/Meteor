@@ -38,7 +38,10 @@ class messagelogger(commands.Cog):
     async def on_message_delete(self, message: discord.Message):
         if message.guild == None:
             return
-        current_server_id = str(message.guild.id)
+        try:
+            current_server_id = str(message.guild.id)
+        except AttributeError:
+            return
         data = self.read(current_server_id)
         if data[current_server_id]["logging_channel"] == 0:
             return
@@ -51,7 +54,10 @@ class messagelogger(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
-        current_server_id = str(after.guild.id)
+        try:
+            current_server_id = str(after.guild.id)
+        except AttributeError:
+            return
         data = self.read(current_server_id)
         if data[current_server_id]["logging_channel"] == 0:
             return

@@ -62,10 +62,13 @@ class levelsystem(commands.Cog):
 
         # Ensure user exists
         if user_id not in levels_data[server_id]:
-            levels_data[server_id][user_id] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
+            levels_data[server_id][user_id] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False, "total_xp": 0}
 
         if "level_lock" not in levels_data[server_id][user_id]:
             levels_data[server_id][user_id]["level_lock"] = False
+        
+        if "total_xp" not in levels_data[server_id][user_id]:
+            levels_data[server_id][user_id]["total_xp"] = 0
         
         if levels_data[server_id][user_id]["level_lock"] == True:
             return
@@ -73,6 +76,7 @@ class levelsystem(commands.Cog):
         # Add XP
         leveled_up = False
         levels_data[server_id][user_id]["xp"] += 5
+        levels_data[server_id][user_id]["total_xp"] += 5
         if levels_data[server_id][user_id]["xp"] >= levels_data[server_id][user_id]["xp_needed"]:
             levels_data[server_id][user_id]["level"] += 1
             levels_data[server_id][user_id]["xp"] = 0
@@ -131,11 +135,15 @@ class levelsystem(commands.Cog):
             data[csi][str(message.author.id)]["xp"] = 0
         else:
             data[csi][str(message.author.id)]["xp"] -= 5
+            data[csi][str(message.author.id)]["total_xp"] -= 5
         self.write(data)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
-        csi = str(before.guild.id)
+        try:
+            csi = str(before.guild.id)
+        except AttributeError:
+            return
         if csi == None:
             return
         if before.author.id == self.bot.user.id:
@@ -157,6 +165,7 @@ class levelsystem(commands.Cog):
                 data[csi][str(before.author.id)]["xp"] = 0
             else:
                 data[csi][str(before.author.id)]["xp"] -= 5
+                data[csi][str(before.author.id)]["total_xp"] -= 5
             self.write(data)
 
     levelgroup = app_commands.Group(name="level", description="Check your level and xp")
@@ -286,6 +295,35 @@ class levelsystem(commands.Cog):
         
         self.write_config(data, csi)
         await interaction.response.send_message("Channel {} has been excluded from earning xp/levels in.".format(channel.mention), ephemeral=True)
+    
+    @levelgroup.command(name="leaderboard", description="Check the leaderboard of the server.")
+    async def levelleaderboard(self, interaction: discord.Interaction):
+        csi = str(interaction.guild.id)
+        if csi == None:
+            return
+        
+        data = self.read(csi)
+
+        leaderboard = []
+        users = data[csi]
+        sorted_users = sorted(users.items(), key=lambda x: x[1]["total_xp"], reverse=True)
+        embed = discord.Embed(
+            title="Leaderboard",
+            description="Top 10 users with the most XP",
+            color=discord.Color.random()
+        )
+        for i, (user_id, user_data) in enumerate(sorted_users[:10]):
+            user = interaction.guild.get_member(int(user_id))
+            if user is None:
+                continue
+            xp = user_data["xp"]
+            level = user_data["level"]
+            xp_needed = user_data["xp_needed"]
+            leaderboard.append(f"{i+1}. {user.name} - Level: {level} - XP: {xp} - XP until next level: {xp_needed}")
+            embed.add_field(name=f"{i+1}. {user.name}", value=f"Level: {level} - XP: {xp} - XP until next level: {xp_needed}", inline=False)
+        
+        embed.set_footer(text="Today at " + self.time_now)
+        await interaction.response.send_message(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(levelsystem(bot))
