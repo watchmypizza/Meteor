@@ -175,6 +175,8 @@ class counting(commands.Cog):
                     await channel.send(f"{message.author.mention} ruined the count! Reset to 0.")
         else:
             if data[current_server_id]["delete_messages"]:
+                if any(role_id in data[current_server_id]["whitelisted_roles"] for role_id in user_role_ids):
+                    return
                 await message.delete()
 
 async def setup(bot):
