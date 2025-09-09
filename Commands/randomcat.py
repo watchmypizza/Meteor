@@ -14,7 +14,11 @@ class randomcat(commands.Cog):
         response = requests.get(self.url)
         data = response.json()
         image_url = data[0]['url']
-        await interaction.response.send_message(image_url, ephemeral=True)
+        embed = discord.Embed(
+            title="Meow"
+        )
+        embed.set_image(url=image_url)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(randomcat(bot))
