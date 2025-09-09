@@ -37,8 +37,14 @@ class levelsystem(commands.Cog):
             data[server_id] = {"level_roles": []}
         if "level_roles" not in data[server_id]:
             data[server_id]["level_roles"] = []
+        if "excluded_level_channels" not in data[server_id]:
+            data[server_id]["excluded_level_channels"] = []
         return data
     
+    def write_config(self, data, server_id):
+        with open(self.config, "w") as f:
+            json.dump(data, f, indent=4)
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.guild is None or message.author.bot:
@@ -51,9 +57,15 @@ class levelsystem(commands.Cog):
         levels_data = self.read(server_id)
         config_data = self.read_config(server_id)
 
+        if message.channel.id in config_data[server_id]["excluded_level_channels"]:
+            return
+
         # Ensure user exists
         if user_id not in levels_data[server_id]:
             levels_data[server_id][user_id] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
+
+        if "level_lock" not in levels_data[server_id][user_id]:
+            levels_data[server_id][user_id]["level_lock"] = False
         
         if levels_data[server_id][user_id]["level_lock"] == True:
             return
@@ -64,7 +76,7 @@ class levelsystem(commands.Cog):
         if levels_data[server_id][user_id]["xp"] >= levels_data[server_id][user_id]["xp_needed"]:
             levels_data[server_id][user_id]["level"] += 1
             levels_data[server_id][user_id]["xp"] = 0
-            levels_data[server_id][user_id]["xp_needed"] += 150
+            levels_data[server_id][user_id]["xp_needed"] += 50 + (levels_data[server_id][user_id]["level"] ** 2 * 100)
             leveled_up = True
         
         self.write(levels_data)
@@ -105,15 +117,20 @@ class levelsystem(commands.Cog):
             return
 
         data = self.read(csi)
+        config_data = self.read_config(csi)
+
+        if message.channel.id in config_data[csi]["excluded_level_channels"]:
+            return
         
-        if levels_data[server_id][user_id]["level_lock"] == True:
+        if data[csi][str(message.author.id)]["level_lock"] == True:
             return
 
         if str(message.author.id) not in data[csi]:
             data[csi][str(message.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
-        if data[csi][str(message.author.id)]["xp"] == 0:
-            return
-        data[csi][str(message.author.id)]["xp"] -= 5
+        if data[csi][str(message.author.id)]["xp"] <= 0:
+            data[csi][str(message.author.id)]["xp"] = 0
+        else:
+            data[csi][str(message.author.id)]["xp"] -= 5
         self.write(data)
 
     @commands.Cog.listener()
@@ -125,17 +142,21 @@ class levelsystem(commands.Cog):
             return
         
         data = self.read(csi)
-
-        if levels_data[server_id][user_id]["level_lock"] == True:
+        config_data = self.read_config(csi)
+        if before.channel.id in config_data[csi]["excluded_level_channels"]:
             return
 
-        if str(before.author.id) not in data:
+        if data[csi][str(before.author.id)]["level_lock"] == True:
+            return
+
+        if str(before.author.id) not in data[csi]:
             data[csi][str(before.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
         
         if len(str(before.content)) > len(str(after.content)):
-            if data[csi][str(message.author.id)]["xp"] == 0:
-                return
-            data[csi][str(before.author.id)]["xp"] -= 5
+            if data[csi][str(before.author.id)]["xp"] <= 0:
+                data[csi][str(before.author.id)]["xp"] = 0
+            else:
+                data[csi][str(before.author.id)]["xp"] -= 5
             self.write(data)
 
     levelgroup = app_commands.Group(name="level", description="Check your level and xp")
@@ -185,7 +206,7 @@ class levelsystem(commands.Cog):
         await interaction.response.send_message(embed=embed)
     
     @levelgroup.command(name="lock", description="Lock a user's level.")
-    @app_commands.describe(user="THe user to level lock")
+    @app_commands.describe(user="The user to level lock")
     async def levellock(self, interaction: discord.Interaction, user: discord.Member):
         if not interaction.user.guild_permissions.moderate_members:
             await interaction.response.send_message("You do not have permission to use this command.")
@@ -195,20 +216,26 @@ class levelsystem(commands.Cog):
         if csi == None:
             return
         
-        data = self.read()
+        data = self.read(csi)
         if str(user.id) not in data[csi]:
             data[csi][str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
         
-        data[csi][str(user.id)]["level_lock"] = not data[csi][str(user.id)]["level_lock"]
-        self.write(data)
         if data[csi][str(user.id)]["level_lock"] == True:
-            await interaction.response.send_message("Level has been locked for user {}.".format(user.mention), ephemeral=True)
-        else:
+            data[csi][str(user.id)]["level_lock"] = False
             await interaction.response.send_message("Level has been unlocked for user {}.".format(user.mention), ephemeral=True)
+        else:
+            data[csi][str(user.id)]["level_lock"] = True
+            await interaction.response.send_message("Level has been locked for user {}.".format(user.mention), ephemeral=True)
+        
+        self.write(data)
     
     @levelgroup.command(name="set", description="Set a user's level.")
-    @app_commands.describe(user="User to moderate", level="The level to set the user to.")
-    async def levelset(self, interaction: discord.Interaction, user: discord.Member, level: int):
+    @app_commands.describe(user="User to moderate", operation="The operation to execute", value="The level to set the user to.")
+    @app_commands.choices(operation=[
+        app_commands.Choice(name="level", value="level"),
+        app_commands.Choice(name="xp", value="xp")
+    ])
+    async def levelset(self, interaction: discord.Interaction, user: discord.Member, operation: str, value: int):
         if not interaction.user.guild_permissions.moderate_members:
             await interaction.response.send_message("You do not have permission to use this command.")
             return
@@ -221,9 +248,44 @@ class levelsystem(commands.Cog):
         if str(user.id) not in data[csi]:
             data[csi][str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
 
-        data[csi][str(user.id)]["level"] = level
+        if operation == "level":
+            calculated_xp_needed = 50 + (value ** 2 * 100)
+            data[csi][str(user.id)]["level"] = value
+            data[csi][str(user.id)]["xp_needed"] = calculated_xp_needed
+            await interaction.response.send_message("Level has been set to {} for user {}.".format(value, user.mention), ephemeral=True)
+        elif operation == "xp":
+            if value >= data[csi][str(user.id)]["xp_needed"]:
+                data[csi][str(user.id)]["level"] += 1
+                data[csi][str(user.id)]["xp_needed"] += 150
+            data[csi][str(user.id)]["xp"] = value
+            await interaction.response.send_message("XP has been set to {} for user {}.".format(value, user.mention), ephemeral=True)
+        
         self.write(data)
-        await interaction.response.send_message("Level has been set for user {} to {}.".format(user.mention, level), ephemeral=True)
+    
+    @levelgroup.command(name="exclude", description="Exclude a channel from earning xp/levels in.")
+    @app_commands.describe(channel="The channel to exclude")
+    async def levelexclude(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        if not interaction.user.guild_permissions.manage_channels:
+            await interaction.response.send_message("You do not have permission to use this command.")
+            return
+        
+        csi = str(interaction.guild.id)
+        if csi == None:
+            return
+
+        data = self.read_config(csi)
+        
+        excluded_level_channels = data[csi]["excluded_level_channels"]
+        if channel.id not in excluded_level_channels:
+            excluded_level_channels.append(channel.id)
+        else:
+            excluded_level_channels.remove(channel.id)
+            self.write_config(data, csi)
+            await interaction.response.send_message("Channel {} has been included in earning xp/levels in.".format(channel.mention), ephemeral=True)
+            return
+        
+        self.write_config(data, csi)
+        await interaction.response.send_message("Channel {} has been excluded from earning xp/levels in.".format(channel.mention), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(levelsystem(bot))
