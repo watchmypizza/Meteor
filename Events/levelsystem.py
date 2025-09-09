@@ -126,7 +126,10 @@ class levelsystem(commands.Cog):
         if message.channel.id in config_data[csi]["excluded_level_channels"]:
             return
         
-        if data[csi][str(message.author.id)]["level_lock"] == True:
+        try:
+            if data[csi][str(message.author.id)]["level_lock"] == True:
+                return
+        except KeyError:
             return
 
         if str(message.author.id) not in data[csi]:
