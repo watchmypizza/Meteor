@@ -1,6 +1,10 @@
-Basically linux-like bot using old-style chat commands.
+# What is this bot and how does it work?
 
-Prefix is "$ "
+The bot is supposed to be an all-in-one bot for moderation (Dyno), levels (Arcane) and Counting (Counting)
+
+You can use chat commands (UNIX inspired) using the prefix "$ "
+
+The space between the command and the prefix is mandatory, or the command won't execute.
 
 # Command Overview
 
