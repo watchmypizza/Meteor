@@ -32,6 +32,8 @@ Currently the bot has an amount of **37** commands. Though the number may vary e
 
 [x] Auto-react to suggestions
 
+[ ] Recode settings logic and migrate to Firestore
+
 [ ] Customisable prefix
 
 [ ] Modals and buttons
