@@ -11,13 +11,12 @@ dotenv.load_dotenv(".env")
 service = os.getenv("FIREBASE_JSON")
 
 cred = credentials.Certificate(service)
-firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 collection_ref = db.collection("serverconfigs")
 
 
-class Configure(commands.Cog):
+class configure(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -34,13 +33,13 @@ class Configure(commands.Cog):
             "ann_channel": 0,
             "bot_role": 0,
             "mod_logs": 0,
-            "suggestion_channel": 0
+            "suggestion_channel": 0,
+            "excluded_level_channels": []
         }
         await self.update_guild_config(guild_id, default)
         return default
 
     async def update_guild_config(self, guild_id: str, data: dict):
-        """Write/update guild config to Firestore"""
         doc_ref = collection_ref.document(guild_id)
         doc_ref.set(data, merge=True)
 

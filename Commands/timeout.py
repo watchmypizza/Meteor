@@ -3,29 +3,31 @@ from discord.ext import commands
 from discord import app_commands
 import humanfriendly
 from datetime import timedelta
-import os, json
+import os
+import dotenv
+from firebase_admin import credentials, firestore
+import firebase_admin
+
+env = dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+collection_ref = db.collection("serverconfigs")
 
 class timeout(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = "JSONS/serverconfigs.json"
     
-    def read(self, csi):
-        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
-            data = {}
-        else:
-            with open(self.config, "r") as f:
-                data = json.load(f)
-            
-        if csi not in data:
-            data[csi] = {
-                "mod_logs": 0
-            }
-        
-        if "mod_logs" not in data[csi]:
-            data[csi]["mod_logs"] = 0
-
-        return data
+    async def get_guild_configs(self, current_guild_id: str):
+        doc_ref = collection_ref.document(current_guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
     
     @app_commands.command(name="mute", description="Mute a member for a time period.")
     @app_commands.describe(member="The member to mute.", time="The time to mute the member for.", reason="The reason for the mute")
@@ -40,12 +42,12 @@ class timeout(commands.Cog):
             if csi is None:
                 return
             
-            data = self.read(csi)
+            data = await self.get_guild_configs(csi)
 
-            if data[csi]["mod_logs"] == 0:
+            if data["mod_logs"] == 0:
                 return
 
-            ch = discord.utils.get(interaction.guild.channels, id=data[csi]["mod_logs"])
+            ch = discord.utils.get(interaction.guild.channels, id=data["mod_logs"])
             embed = discord.Embed(
                 title="Timeout",
                 description=f"Member {member.mention} has been timed out for `{reason}` by {interaction.user.mention}"

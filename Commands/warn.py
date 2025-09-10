@@ -3,51 +3,46 @@ from discord.ext import commands
 from discord import app_commands
 from datetime import datetime
 import os
-import json
 from typing import Optional
+import firebase_admin
+import dotenv
+from firebase_admin import credentials, firestore
+
+env = dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+serverconfigs = db.collection("serverconfigs")
+warnings = db.collection("warnings")
 
 class warncmd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.warnings = "JSONS/warnings.json"
-        self.config = "JSONS/serverconfigs.json"
-
-    def read(self, current_server_id):
-        if not os.path.exists(self.warnings) or os.path.getsize(self.warnings) == 0:
-            data = {}
-        else:
-            with open(self.warnings, "r") as f:
-                data = json.load(f)
-
-        if current_server_id not in data:
-            data[current_server_id] = {
-                "warnings": 0,
-                "warning_list": []
-            }
-
-        return data
     
-    def readconf(self, csi):
-        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
-            data = {}
-        else:
-            with open(self.config, "r") as f:
-                data = json.load(f)
-            
-        if csi not in data:
-            data[csi] = {
-                "mod_logs": 0
-            }
+    async def get_user_warnings_in_guild(self, guild_id):
+        doc_ref = warnings.document(guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
         
-        if "mod_logs" not in data[csi]:
-            data[csi]["mod_logs"] = 0
-
-        return data
+        default = {}
+        return default
+    
+    async def get_guild_config(self, guild_id):
+        doc_ref = serverconfigs.document(guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
         
+        default = {}
+        return default
 
-    def write(self, data):
-        with open(self.warnings, "w") as f:
-            json.dump(data, f, indent=4)
+    async def write_user_warning(self, guild_id, data):
+        doc_ref = warnings.document(guild_id)
+        doc_ref.set(data, merge=True)
 
     @app_commands.command(name="warn", description="Warn a user for a reason.")
     @app_commands.describe(user="The user you are warning", reason="The reason for the warning")
@@ -58,31 +53,31 @@ class warncmd(commands.Cog):
         
         csi = str(interaction.guild.id)
 
-        data = self.read(csi)
+        data = await self.get_user_warnings_in_guild(csi)
         user_id = str(user.id)
 
-        if user_id not in data[csi]:
-            data[csi][user_id] = {"warnings": 0, "warning_list": []}
+        if user_id not in data:
+            data[user_id] = {"warnings": 0, "warning_list": []}
 
-        data[csi][user_id]["warnings"] += 1
+        data[user_id]["warnings"] += 1
 
         new_warning = {
             "reason": reason,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        data[csi][user_id]["warning_list"].append(new_warning)
+        data[user_id]["warning_list"].append(new_warning)
 
-        self.write(data)
+        await self.write_user_warning(csi, data)
 
-        await interaction.response.send_message(f"{user.mention} has been warned for: `{reason}`. They now have {data[csi][str(user.id)]['warnings']} warnings.", ephemeral=True)
+        await interaction.response.send_message(f"{user.mention} has been warned for: `{reason}`. They now have {data[str(user.id)]['warnings']} warnings.", ephemeral=True)
 
         csi = str(interaction.guild.id)
         if csi is None:
             return
-        data = self.readconf(csi)
-        if data[csi]["mod_logs"] != 0:
-            ch = discord.utils.get(interaction.guild.channels, id=data[csi]["mod_logs"])
+        data = await self.get_guild_config(csi)
+        if data["mod_logs"] != 0:
+            ch = discord.utils.get(interaction.guild.channels, id=data["mod_logs"])
             embed = discord.Embed(
                 title="Member warned",
                 description=f"{user.mention} has been warned for `{reason}` by {interaction.user.mention}",
@@ -111,15 +106,15 @@ class warncmd(commands.Cog):
                 await interaction.response.send_message("You do not have permission to view warnings for other users.", ephemeral=True)
                 return
 
-        data = self.read(csi)
+        data = await self.get_user_warnings_in_guild(csi)
         user_id = str(target_user.id)
 
-        if user_id not in data[csi] or not data[csi][user_id]["warning_list"]:
+        if user_id not in data or not data[user_id]["warning_list"]:
             await interaction.response.send_message(f"{target_user.display_name} has no warnings.", ephemeral=True)
             return
 
-        warnings_list = data[csi][user_id]["warning_list"]
-        total_warnings = data[csi][user_id]["warnings"]
+        warnings_list = data[user_id]["warning_list"]
+        total_warnings = data[user_id]["warnings"]
 
         embed = discord.Embed(
             title=f"Warnings for {target_user.display_name}",
@@ -149,14 +144,14 @@ class warncmd(commands.Cog):
 
         csi = str(interaction.guild.id)
 
-        data = self.read(csi)
+        data = await self.get_user_warnings_in_guild(csi)
         user_id = str(user.id)
 
-        if user_id not in data[csi] or not data[csi][user_id]["warning_list"]:
+        if user_id not in data or not data[user_id]["warning_list"]:
             await interaction.response.send_message(f"{user.display_name} has no warnings to remove.", ephemeral=True)
             return
 
-        warnings_list = data[csi][user_id]["warning_list"]
+        warnings_list = data[user_id]["warning_list"]
         total_warnings = len(warnings_list)
 
         if not 1 <= warning_number <= total_warnings:
@@ -167,16 +162,16 @@ class warncmd(commands.Cog):
 
         try:
             removed_warning_reason = warnings_list[index_to_remove]["reason"]
-            removed_warning = data[csi][user_id]["warning_list"].pop(index_to_remove)
-            data[csi][user_id]["warnings"] -= 1
-            self.write(data)
-            await interaction.response.send_message(f"Successfully removed Warning {warning_number} for {user.display_name} (Reason: `{removed_warning_reason}`). They now have {data[csi][user_id]['warnings']} warnings.", ephemeral=True)
+            removed_warning = data[user_id]["warning_list"].pop(index_to_remove)
+            data[user_id]["warnings"] -= 1
+            await self.write_user_warning(csi, data)
+            await interaction.response.send_message(f"Successfully removed Warning {warning_number} for {user.display_name} (Reason: `{removed_warning_reason}`). They now have {data[user_id]['warnings']} warnings.", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"An unexpected error occurred: {e}", ephemeral=True)
         
-        data = self.readconf(csi)
-        if data[csi]["mod_logs"] != 0:
-            ch = discord.utils.get(interaction.guild.channels, id=data[csi]["mod_logs"])
+        data = await self.get_guild_config(csi)
+        if data["mod_logs"] != 0:
+            ch = discord.utils.get(interaction.guild.channels, id=data["mod_logs"])
             embed = discord.Embed(
                 title="Removed Warning",
                 description=f"{user.mention}'s warning has been removed by {interaction.user.mention}",

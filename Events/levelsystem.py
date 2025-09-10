@@ -2,48 +2,51 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import os
-import json
+import dotenv
+from firebase_admin import credentials, firestore
+import firebase_admin
 from datetime import datetime
 from typing import Optional
+
+env = dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+if not service or not os.path.exists(service):
+    raise ValueError("Firebase service account JSON path is invalid!")
+
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+serverconfigs = db.collection("serverconfigs")
+levels = db.collection("levels")
 
 class levelsystem(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.levels = "JSONS/levels.json"
-        self.config = "JSONS/serverconfigs.json"
         self.time_now = datetime.now().strftime("%H:%M")
     
-    def read(self, server_id):
-        if not os.path.exists(self.levels) or os.path.getsize(self.levels) == 0:
-            data = {}
-        else:
-            with open(self.levels, "r") as f:
-                data = json.load(f)
-        if server_id not in data:
-            data[server_id] = {}
-        return data
+    async def get_levels(self, current_guild_id: str):
+        doc_ref = levels.document(current_guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
     
-    def write(self, data):
-        with open(self.levels, "w") as f:
-            json.dump(data, f, indent=4)
+    async def write_levels(self, data, current_guild_id: str):
+        doc_ref = levels.document(current_guild_id)
+        doc_ref.set(data, merge=True)
     
-    def read_config(self, server_id):
-        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
-            data = {}
-        else:
-            with open(self.config, "r") as f:
-                data = json.load(f)
-        if server_id not in data:
-            data[server_id] = {"level_roles": []}
-        if "level_roles" not in data[server_id]:
-            data[server_id]["level_roles"] = []
-        if "excluded_level_channels" not in data[server_id]:
-            data[server_id]["excluded_level_channels"] = []
-        return data
+    async def get_server_configs(self, current_guild_id: str):
+        doc_ref = serverconfigs.document(current_guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
     
-    def write_config(self, data, server_id):
-        with open(self.config, "w") as f:
-            json.dump(data, f, indent=4)
+    async def write_server_configs(self, data, current_guild_id: str):
+        doc_ref = serverconfigs.document(current_guild_id)
+        doc_ref.set(data, merge=True)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -54,39 +57,39 @@ class levelsystem(commands.Cog):
         user_id = str(message.author.id)
         
         # Load data
-        levels_data = self.read(server_id)
-        config_data = self.read_config(server_id)
+        levels_data = await self.get_levels(server_id)
+        config_data = await self.get_server_configs(server_id)
 
-        if message.channel.id in config_data[server_id]["excluded_level_channels"]:
+        if message.channel.id in config_data["excluded_level_channels"]:
             return
 
         # Ensure user exists
-        if user_id not in levels_data[server_id]:
-            levels_data[server_id][user_id] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False, "total_xp": 0}
+        if user_id not in levels_data:
+            levels_data[user_id] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False, "total_xp": 0}
 
-        if "level_lock" not in levels_data[server_id][user_id]:
-            levels_data[server_id][user_id]["level_lock"] = False
+        if "level_lock" not in levels_data[user_id]:
+            levels_data[user_id]["level_lock"] = False
         
-        if "total_xp" not in levels_data[server_id][user_id]:
-            levels_data[server_id][user_id]["total_xp"] = 0
+        if "total_xp" not in levels_data[user_id]:
+            levels_data[user_id]["total_xp"] = 0
         
-        if levels_data[server_id][user_id]["level_lock"] == True:
+        if levels_data[user_id]["level_lock"] == True:
             return
 
         # Add XP
         leveled_up = False
-        levels_data[server_id][user_id]["xp"] += 5
-        levels_data[server_id][user_id]["total_xp"] += 5
-        if levels_data[server_id][user_id]["xp"] >= levels_data[server_id][user_id]["xp_needed"]:
-            levels_data[server_id][user_id]["level"] += 1
-            levels_data[server_id][user_id]["xp"] = 0
-            levels_data[server_id][user_id]["xp_needed"] += 50 + (levels_data[server_id][user_id]["level"] ** 2 * 100)
+        levels_data[user_id]["xp"] += 5
+        levels_data[user_id]["total_xp"] += 5
+        if levels_data[user_id]["xp"] >= levels_data[user_id]["xp_needed"]:
+            levels_data[user_id]["level"] += 1
+            levels_data[user_id]["xp"] = 0
+            levels_data[user_id]["xp_needed"] += 50 + (levels_data[user_id]["level"] ** 2 * 100)
             leveled_up = True
         
-        self.write(levels_data)
+        await self.write_levels(levels_data, server_id)
 
         if leveled_up:
-            user_level = levels_data[server_id][user_id]["level"]
+            user_level = levels_data[user_id]["level"]
             guild = message.guild
 
             level_roles = sorted(config_data[server_id]["level_roles"], key=lambda x: x["level"])
@@ -120,26 +123,26 @@ class levelsystem(commands.Cog):
         if message.author.id == self.bot.user.id:
             return
 
-        data = self.read(csi)
-        config_data = self.read_config(csi)
+        data = await self.get_levels(csi)
+        config_data = await self.get_server_configs(csi)
 
-        if message.channel.id in config_data[csi]["excluded_level_channels"]:
+        if message.channel.id in config_data["excluded_level_channels"]:
             return
         
         try:
-            if data[csi][str(message.author.id)]["level_lock"] == True:
+            if data[str(message.author.id)]["level_lock"] == True:
                 return
         except KeyError:
             return
 
-        if str(message.author.id) not in data[csi]:
-            data[csi][str(message.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
-        if data[csi][str(message.author.id)]["xp"] <= 0:
-            data[csi][str(message.author.id)]["xp"] = 0
+        if str(message.author.id) not in data:
+            data[str(message.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
+        if data[str(message.author.id)]["xp"] <= 0:
+            data[str(message.author.id)]["xp"] = 0
         else:
-            data[csi][str(message.author.id)]["xp"] -= 5
-            data[csi][str(message.author.id)]["total_xp"] -= 5
-        self.write(data)
+            data[str(message.author.id)]["xp"] -= 5
+            data[str(message.author.id)]["total_xp"] -= 5
+        await self.write_levels(data, csi)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
@@ -152,24 +155,24 @@ class levelsystem(commands.Cog):
         if before.author.id == self.bot.user.id:
             return
         
-        data = self.read(csi)
-        config_data = self.read_config(csi)
-        if before.channel.id in config_data[csi]["excluded_level_channels"]:
+        data = await self.get_levels(csi)
+        config_data = await self.get_server_configs(csi)
+        if before.channel.id in config_data["excluded_level_channels"]:
             return
 
         if data[csi][str(before.author.id)]["level_lock"] == True:
             return
 
-        if str(before.author.id) not in data[csi]:
-            data[csi][str(before.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
+        if str(before.author.id) not in data:
+            data[str(before.author.id)] = {"xp": 0, "level": 0, "xp_needed": 50}
         
         if len(str(before.content)) > len(str(after.content)):
-            if data[csi][str(before.author.id)]["xp"] <= 0:
-                data[csi][str(before.author.id)]["xp"] = 0
+            if data[str(before.author.id)]["xp"] <= 0:
+                data[str(before.author.id)]["xp"] = 0
             else:
-                data[csi][str(before.author.id)]["xp"] -= 5
-                data[csi][str(before.author.id)]["total_xp"] -= 5
-            self.write(data)
+                data[str(before.author.id)]["xp"] -= 5
+                data[str(before.author.id)]["total_xp"] -= 5
+            await self.write_levels(data, csi)
 
     levelgroup = app_commands.Group(name="level", description="Check your level and xp")
     @levelgroup.command(name="show", description="Check your level and xp")
@@ -179,14 +182,14 @@ class levelsystem(commands.Cog):
         if csi == None:
             return
         if user:
-            data = self.read(csi)
-            if str(user.id) not in data[csi]:
+            data = await self.get_levels(csi)
+            if str(user.id) not in data:
                 await interaction.response.send_message("This user does not have any stats to show!")
                 return
             
-            xp = data[csi][str(user.id)]["xp"]
-            level = data[csi][str(user.id)]["level"]
-            xp_needed = data[csi][str(user.id)]["xp_needed"]
+            xp = data[str(user.id)]["xp"]
+            level = data[str(user.id)]["level"]
+            xp_needed = data[str(user.id)]["xp_needed"]
 
             embed = discord.Embed(
                 title=user.name,
@@ -198,13 +201,13 @@ class levelsystem(commands.Cog):
             await interaction.response.send_message(embed=embed)
             return
         
-        data = self.read(csi)
+        data = await self.get_levels(csi)
 
         user_id = str(interaction.user.id)
-        if user_id not in data[csi]:
-            data[csi][user_id] = {"xp": 0, "level": 0, "xp_needed": 50}
+        if user_id not in data:
+            data[user_id] = {"xp": 0, "level": 0, "xp_needed": 50}
 
-        user_data = data[csi][user_id]
+        user_data = data[user_id]
         xp = user_data["xp"]
         level = user_data["level"]
         xp_needed = user_data["xp_needed"]
@@ -228,18 +231,18 @@ class levelsystem(commands.Cog):
         if csi == None:
             return
         
-        data = self.read(csi)
-        if str(user.id) not in data[csi]:
-            data[csi][str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
+        data = self.get_levels(csi)
+        if str(user.id) not in data:
+            data[str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
         
-        if data[csi][str(user.id)]["level_lock"] == True:
-            data[csi][str(user.id)]["level_lock"] = False
+        if data[str(user.id)]["level_lock"] == True:
+            data[str(user.id)]["level_lock"] = False
             await interaction.response.send_message("Level has been unlocked for user {}.".format(user.mention), ephemeral=True)
         else:
-            data[csi][str(user.id)]["level_lock"] = True
+            data[str(user.id)]["level_lock"] = True
             await interaction.response.send_message("Level has been locked for user {}.".format(user.mention), ephemeral=True)
         
-        self.write(data)
+        await self.write_levels(data, csi)
     
     @levelgroup.command(name="set", description="Set a user's level.")
     @app_commands.describe(user="User to moderate", operation="The operation to execute", value="The level to set the user to.")
@@ -256,23 +259,23 @@ class levelsystem(commands.Cog):
         if csi == None:
             return
 
-        data = self.read(csi)
-        if str(user.id) not in data[csi]:
-            data[csi][str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
+        data = await self.get_levels(csi)
+        if str(user.id) not in data:
+            data[str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
 
         if operation == "level":
             calculated_xp_needed = 50 + (value ** 2 * 100)
-            data[csi][str(user.id)]["level"] = value
-            data[csi][str(user.id)]["xp_needed"] = calculated_xp_needed
+            data[str(user.id)]["level"] = value
+            data[str(user.id)]["xp_needed"] = calculated_xp_needed
             await interaction.response.send_message("Level has been set to {} for user {}.".format(value, user.mention), ephemeral=True)
         elif operation == "xp":
-            if value >= data[csi][str(user.id)]["xp_needed"]:
-                data[csi][str(user.id)]["level"] += 1
-                data[csi][str(user.id)]["xp_needed"] += 150
-            data[csi][str(user.id)]["xp"] = value
+            if value >= data[str(user.id)]["xp_needed"]:
+                data[str(user.id)]["level"] += 1
+                data[str(user.id)]["xp_needed"] += 150
+            data[str(user.id)]["xp"] = value
             await interaction.response.send_message("XP has been set to {} for user {}.".format(value, user.mention), ephemeral=True)
         
-        self.write(data)
+        await self.write_levels(data, csi)
     
     @levelgroup.command(name="exclude", description="Exclude a channel from earning xp/levels in.")
     @app_commands.describe(channel="The channel to exclude")
@@ -285,18 +288,18 @@ class levelsystem(commands.Cog):
         if csi == None:
             return
 
-        data = self.read_config(csi)
+        data = await self.get_server_configs(csi)
         
-        excluded_level_channels = data[csi]["excluded_level_channels"]
+        excluded_level_channels = data["excluded_level_channels"]
         if channel.id not in excluded_level_channels:
             excluded_level_channels.append(channel.id)
         else:
             excluded_level_channels.remove(channel.id)
-            self.write_config(data, csi)
+            await self.write_server_configs(data, csi)
             await interaction.response.send_message("Channel {} has been included in earning xp/levels in.".format(channel.mention), ephemeral=True)
             return
         
-        self.write_config(data, csi)
+        await self.write_server_configs(data, csi)
         await interaction.response.send_message("Channel {} has been excluded from earning xp/levels in.".format(channel.mention), ephemeral=True)
     
     @levelgroup.command(name="leaderboard", description="Check the leaderboard of the server.")
@@ -305,10 +308,10 @@ class levelsystem(commands.Cog):
         if csi == None:
             return
         
-        data = self.read(csi)
+        data = await self.get_levels(csi)
 
         leaderboard = []
-        users = data[csi]
+        users = data
         sorted_users = sorted(users.items(), key=lambda x: x[1]["total_xp"], reverse=True)
         embed = discord.Embed(
             title="Leaderboard",

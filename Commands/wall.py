@@ -1,29 +1,30 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
-import os, json
+import os
+import firebase_admin
+from firebase_admin import credentials, firestore
+import dotenv
+
+env = dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+collection_ref = db.collection("serverconfigs")
 
 class postwall(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = "JSONS/serverconfigs.json"
     
-    def read(self, current_server_id):
-        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
-            data = {}
-        else:
-            with open(self.config, "r") as f:
-                data = json.load(f)
-        
-        if current_server_id not in data:
-            data[current_server_id] = {
-                "ann_channel": 0 
-            }
-
-        if "ann_channel" not in data[current_server_id]:
-            data[current_server_id]["ann_channel"] = 0
-        
-        return data
+    async def get_guild_config(self, guild_id: str):
+        doc_ref = collection_ref.document(guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        default = {}
 
     @commands.command()
     async def wall(self, ctx, *, arg: str=None):
@@ -35,12 +36,12 @@ class postwall(commands.Cog):
             await ctx.send("Invalid arguments. Use `wall <message>`")
         
         csi = str(ctx.guild.id)
-        data = self.read(csi)
+        data = await self.get_guild_config(csi)
 
-        if data[csi]["ann_channel"] == 0:
+        if data["ann_channel"] == 0:
             return
 
-        ch = discord.utils.get(ctx.guild.text_channels, id=data[csi]["ann_channel"])
+        ch = discord.utils.get(ctx.guild.text_channels, id=data["ann_channel"])
         cur_time = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
         await ch.send(f"""```
         Broadcast message from root@{ctx.author.name} ({cur_time}):

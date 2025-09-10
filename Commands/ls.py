@@ -1,33 +1,34 @@
 import discord
 from discord.ext import commands
-import os, json
+import os
+import dotenv
+from firebase_admin import credentials, firestore
+
+dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+collection_ref = db.collection("serverconfigs")
 
 class lscmd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = "JSONS/serverconfigs.json"
     
-    def read(self, current_server_id):
-        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
-            data = {}
-        else:
-            with open(self.config, "r") as f:
-                data = json.load(f)
-        
-        if not current_server_id in data:
-            data = {
-                "bot_role": 0
-            }
-        if "bot_role" not in data[current_server_id]:
-            data[current_server_id]["bot_role"] = 0
-        
-        return data
+    async def get_guild_configs(self, current_guild_id: str):
+        doc_ref = collection_ref.document(current_guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
 
     @commands.command()
     async def ls(self, ctx):
         try:
             csi = str(ctx.guild.id)
-            data = self.read(csi)
+            data = await self.get_guild_configs(csi)
             embed = discord.Embed(
                 title=ctx.guild.name,
                 color=discord.Color.random()
@@ -40,8 +41,8 @@ class lscmd(commands.Cog):
             embed.add_field(name="Owner", value=f"{ctx.guild.owner.mention}", inline=True)
             total_members = 0
             for member in ctx.guild.members:
-                if not data[csi]["bot_role"] == 0:
-                    if discord.utils.get(ctx.guild.roles, id=data[csi]["bot_role"]) in member.roles:
+                if not data["bot_role"] == 0:
+                    if discord.utils.get(ctx.guild.roles, id=data["bot_role"]) in member.roles:
                         continue
                 else:
                     pass

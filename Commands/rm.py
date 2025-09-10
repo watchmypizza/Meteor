@@ -1,32 +1,28 @@
 import discord
 from discord.ext import commands
 import os
-import json
+import dotenv
+from firebase_admin import credentials, firestore
+
+env = dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+collection_ref = db.collection("serverconfigs")
 
 class kickban(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = "JSONS/serverconfigs.json"
 
-    def read(self, current_server_id):
-        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
-            data = {}
-        else:
-            with open(self.config, "r") as f:
-                data = json.load(f)
-        
-        if current_server_id not in data:
-            data[current_server_id] = {
-                "logging_channel": 0,
-                "welcomer_channel": 0,
-                "level_roles": [],
-                "staff_roles": [],
-                "ann_channel": 0,
-                "bot_role": 0,
-                "mod_logs": 0
-            }
-        
-        return data
+    async def get_guild_configs(self, current_guild_id: str):
+        doc_ref = collection_ref.document(current_guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
 
     @commands.command()
     async def rm(self, ctx, arg: str, member: discord.Member, *, reason_input=None):
@@ -69,9 +65,9 @@ class kickban(commands.Cog):
                     await ctx.send(f'{member.mention} has been kicked.')
             
             csi = str(ctx.guild.id)
-            data = self.read(csi)
-            if data[csi]["mod_logs"] != 0:
-                ch = discord.utils.get(ctx.guild.channels, id=data[csi]["mod_logs"])
+            data = await self.get_guild_configs(csi)
+            if data["mod_logs"] != 0:
+                ch = discord.utils.get(ctx.guild.channels, id=data["mod_logs"])
                 if arg == "-rf":
                     if reason:
                         embed = discord.Embed(
