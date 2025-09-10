@@ -10,6 +10,7 @@ class warncmd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.warnings = "JSONS/warnings.json"
+        self.config = "JSONS/serverconfigs.json"
 
     def read(self, current_server_id):
         if not os.path.exists(self.warnings) or os.path.getsize(self.warnings) == 0:
@@ -25,6 +26,24 @@ class warncmd(commands.Cog):
             }
 
         return data
+    
+    def readconf(self, csi):
+        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
+            data = {}
+        else:
+            with open(self.config, "r") as f:
+                data = json.load(f)
+            
+        if csi not in data:
+            data[csi] = {
+                "mod_logs": 0
+            }
+        
+        if "mod_logs" not in data[csi]:
+            data[csi]["mod_logs"] = 0
+
+        return data
+        
 
     def write(self, data):
         with open(self.warnings, "w") as f:
@@ -57,6 +76,26 @@ class warncmd(commands.Cog):
         self.write(data)
 
         await interaction.response.send_message(f"{user.mention} has been warned for: `{reason}`. They now have {data[csi][str(user.id)]['warnings']} warnings.", ephemeral=True)
+
+        csi = str(interaction.guild.id)
+        if csi is None:
+            return
+        data = self.readconf(csi)
+        if data[csi]["mod_logs"] != 0:
+            ch = discord.utils.get(interaction.guild.channels, id=data[csi]["mod_logs"])
+            embed = discord.Embed(
+                title="Member warned",
+                description=f"{user.mention} has been warned for `{reason}` by {interaction.user.mention}",
+                color=discord.Color.orange()
+            )
+            await ch.send(embed=embed)
+        
+        user_embed = discord.Embed(
+            title="Warning",
+            description=f"You have been warned in {interaction.guild.name} for {reason}.",
+            color=discord.Color.orange()
+        )
+        await user.send(embed=user_embed)
 
     @app_commands.command(name="warnings", description="View warnings for a user.")
     @app_commands.describe(user="The user to view warnings for (defaults to yourself)")
@@ -134,6 +173,16 @@ class warncmd(commands.Cog):
             await interaction.response.send_message(f"Successfully removed Warning {warning_number} for {user.display_name} (Reason: `{removed_warning_reason}`). They now have {data[csi][user_id]['warnings']} warnings.", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"An unexpected error occurred: {e}", ephemeral=True)
+        
+        data = self.readconf(csi)
+        if data[csi]["mod_logs"] != 0:
+            ch = discord.utils.get(interaction.guild.channels, id=data[csi]["mod_logs"])
+            embed = discord.Embed(
+                title="Removed Warning",
+                description=f"{user.mention}'s warning has been removed by {interaction.user.mention}",
+                color=discord.Color.orange()
+            )
+            await ch.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(warncmd(bot))

@@ -23,7 +23,8 @@ class configure(commands.Cog):
                 "level_roles": [],
                 "staff_roles": [],
                 "ann_channel": 0,
-                "bot_role": 0
+                "bot_role": 0,
+                "mod_logs": 0
             }
         
         return data
@@ -135,6 +136,23 @@ class configure(commands.Cog):
         data[csi]["bot_role"] = role.id
         self.write(data)
         await interaction.response.send_message("Set the bot role to {}".format(role.mention), ephemeral=True)
+
+    @configure_group.command(name="modlogs", description="The channel to log mod actions inside of.")
+    @app_commands.describe(channel="The channel to log mod actions inside of.")
+    async def logs_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message(
+                "You do not have the necessary permissions to use this command.", ephemeral=True
+            )
+            return
+        
+        csi = str(interaction.guild.id)
+        data = self.read(csi)
+        data[csi]["mod_logs"] = channel.id
+        self.write(data)
+
+        await interaction.response.send_message(f"Successfully set the logging channel to {channel.mention}", ephemeral=True)
+
 
 async def setup(bot):
     await bot.add_cog(configure(bot))
