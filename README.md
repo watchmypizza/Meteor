@@ -22,6 +22,10 @@ Currently the bot has an amount of **36** commands. Though the number may vary e
 
 [x] Customisable level roles
 
+[ ] Configurable suggestions channel
+
+[ ] Auto-react to suggestions
+
 [ ] Customisable prefix
 
 [ ] Modals and buttons
@@ -32,7 +36,7 @@ Currently the bot has an amount of **36** commands. Though the number may vary e
 
 [ ] Smart automod (Using ollama)
 
-I will add more to this list depending on suggestions or what I come up with.
+> Have a suggestion? Join the [discord server](https://discord.gg/eQ7FHcmHc9) and feel free to suggest it!
 
 # Command Overview
 
