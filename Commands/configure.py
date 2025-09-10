@@ -1,172 +1,162 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import json
 import os
+import firebase_admin
+from firebase_admin import credentials, firestore
+import dotenv
 
-class configure(commands.Cog):
+dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+collection_ref = db.collection("serverconfigs")
+
+
+class Configure(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.json = "JSONS/serverconfigs.json"
-    
-    def read(self, current_server_id):
-        if not os.path.exists(self.json) or os.path.getsize(self.json) == 0:
-            data = {}
-        else:
-            with open(self.json, "r") as f:
-                data = json.load(f)
-        
-        if current_server_id not in data:
-            data[current_server_id] = {
-                "logging_channel": 0,
-                "welcomer_channel": 0,
-                "level_roles": [],
-                "staff_roles": [],
-                "ann_channel": 0,
-                "bot_role": 0,
-                "mod_logs": 0,
-                "suggestion_channel": 0
-            }
-        
-        return data
-    
-    def write(self, data):
-        with open(self.json, "w") as f:
-            json.dump(data, f, indent=4)
 
-    configure_group = app_commands.Group(name="configure", description="Configure the bot!!")
+    async def get_guild_config(self, guild_id: str):
+        doc_ref = collection_ref.document(guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        default = {
+            "logging_channel": 0,
+            "welcomer_channel": 0,
+            "level_roles": [],
+            "staff_roles": [],
+            "ann_channel": 0,
+            "bot_role": 0,
+            "mod_logs": 0,
+            "suggestion_channel": 0
+        }
+        await self.update_guild_config(guild_id, default)
+        return default
+
+    async def update_guild_config(self, guild_id: str, data: dict):
+        """Write/update guild config to Firestore"""
+        doc_ref = collection_ref.document(guild_id)
+        doc_ref.set(data, merge=True)
+
+    configure_group = app_commands.Group(name="configure", description="Configure the bot!")
+
+    async def _check_admin(self, interaction: discord.Interaction):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message(
+                "You do not have the necessary permissions to use this command.",
+                ephemeral=True
+            )
+            return False
+        return True
 
     @configure_group.command(name="logging", description="Message logging channel.")
     @app_commands.describe(channel="The channel to set as the logging channel.")
     async def logging_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("You do not have the necessary permissions to use this command.", ephemeral=True)
+        if not await self._check_admin(interaction):
             return
-        
-        current_server_id = str(interaction.guild.id)
-        data = self.read(current_server_id)
-        data[current_server_id]["logging_channel"] = channel.id
-        self.write(data)
-        await interaction.response.send_message("Set the current logging channel to {}".format(channel.mention), ephemeral=True)
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["logging_channel"] = channel.id
+        await self.update_guild_config(guild_id, config)
+        await interaction.response.send_message(f"Set the logging channel to {channel.mention}", ephemeral=True)
 
     @configure_group.command(name="welcomer", description="Welcomer and goodbye embeds!")
     @app_commands.describe(channel="The channel to send welcome and goodbye embeds.")
     async def welcomer_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("You do not have the necessary permissions to use this command.", ephemeral=True)
+        if not await self._check_admin(interaction):
             return
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["welcomer_channel"] = channel.id
+        await self.update_guild_config(guild_id, config)
+        await interaction.response.send_message(f"Set the welcomer channel to {channel.mention}", ephemeral=True)
 
-        csi = str(interaction.guild.id)
-        data = self.read(csi)
-        data[csi]["welcomer_channel"] = channel.id
-        self.write(data)
-        await interaction.response.send_message("Set the current welcomer channel to {}".format(channel.mention), ephemeral=True)
-
-    @configure_group.command(name="levelroles", description="Set a number of level roles corresponding to each level. [10 roles supported only.]")
+    @configure_group.command(name="levelroles", description="Set a number of level roles corresponding to each level.")
     @app_commands.describe(role="The role to set.", level="The level to set it to")
     @app_commands.choices(action=[
         app_commands.Choice(name="add", value="add"),
         app_commands.Choice(name="remove", value="remove")
     ])
     async def levelroles_subcommand(self, interaction: discord.Interaction, role: discord.Role, level: int, action: app_commands.Choice[str]):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message(
-                "You do not have the necessary permissions to use this command.", ephemeral=True
-            )
+        if not await self._check_admin(interaction):
             return
-        
-        csi = str(interaction.guild.id)
-        data = self.read(csi)
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+
+        if "level_roles" not in config:
+            config["level_roles"] = []
 
         if action.value == "remove":
-            for i, pair in enumerate(data[csi]["level_roles"]):
-                if pair["level"] == level:
-                    del data[csi]["level_roles"][i]
-                    self.write(data)
-                    await interaction.response.send_message(
-                        f"Removed level {level} role.", ephemeral=True
-                    )
-                    return
-        
-        if "level_roles" not in data[csi]:
-            data[csi]["level_roles"] = []
-        
-        for i, pair in enumerate(data[csi]["level_roles"]):
+            config["level_roles"] = [pair for pair in config["level_roles"] if pair["level"] != level]
+            await self.update_guild_config(guild_id, config)
+            await interaction.response.send_message(f"Removed level {level} role.", ephemeral=True)
+            return
+
+        updated = False
+        for pair in config["level_roles"]:
             if pair["level"] == level:
-                data[csi]["level_roles"][i] = {"level": level, "role_id": role.id}
-                self.write(data)
-                await interaction.response.send_message(
-                    f"Updated level {level} role to {role.mention}.", ephemeral=True
-                )
-                return
-        
-        data[csi]["level_roles"].append({"level": level, "role_id": role.id})
-        self.write(data)
-        await interaction.response.send_message(
-            f"Added role {role.mention} for level {level}.", ephemeral=True
-        )
+                pair["role_id"] = role.id
+                updated = True
+                break
+        if not updated:
+            config["level_roles"].append({"level": level, "role_id": role.id})
+
+        await self.update_guild_config(guild_id, config)
+        await interaction.response.send_message(f"Set role {role.mention} for level {level}.", ephemeral=True)
 
     @configure_group.command(name="announcement", description="The channel to post announcements in.")
     @app_commands.describe(channel="The channel to send the announcements in")
-    async def announcemenets_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message(
-                "You do not have the necessary permissions to use this command.", ephemeral=True
-            )
+    async def announcement_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        if not await self._check_admin(interaction):
             return
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["ann_channel"] = channel.id
+        await self.update_guild_config(guild_id, config)
+        await interaction.response.send_message(f"Set the announcements channel to {channel.mention}", ephemeral=True)
 
-        csi = str(interaction.guild.id)
-        data = self.read(csi)
-        data[csi]["ann_channel"] = channel.id
-        self.write(data)
-        await interaction.response.send_message(
-            f"Set the announcements channel to {channel.mention}.", ephemeral=True
-        )
     
     @configure_group.command(name="botrole", description="The bot role to ignore when executing membercount.")
     @app_commands.describe(role="The role to ignore when executing membercount.")
     async def botrole_subcommand(self, interaction: discord.Interaction, role: discord.Role):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message(
-                "You do not have the necessary permissions to use this command.", ephemeral=True
-            )
+        if not await self._check_admin(interaction):
             return
 
-        csi = str(interaction.guild.id)
-        data = self.read(csi)
-        data[csi]["bot_role"] = role.id
-        self.write(data)
-        await interaction.response.send_message("Set the bot role to {}".format(role.mention), ephemeral=True)
-
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["bot_role"] = role.id
+        await self.update_guild_config(guild_id, config)
+        await interaction.response.send_message(f"Set the bot role to {role.mention}", ephemeral=True)
+ 
     @configure_group.command(name="modlogs", description="The channel to log mod actions inside of.")
     @app_commands.describe(channel="The channel to log mod actions inside of.")
     async def logs_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message(
-                "You do not have the necessary permissions to use this command.", ephemeral=True
-            )
+        if not await self._check_admin(interaction):
             return
         
-        csi = str(interaction.guild.id)
-        data = self.read(csi)
-        data[csi]["mod_logs"] = channel.id
-        self.write(data)
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["mod_logs"] = channel.id
+        await self.update_guild_config(guild_id, config)
 
         await interaction.response.send_message(f"Successfully set the logging channel to {channel.mention}", ephemeral=True)
 
     @configure_group.command(name="suggestions", description="Configure the suggestions channel")
     @app_commands.describe(channel="The suggestions channel")
     async def suggestions_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message(
-                "You do not have the necessary permissions to use this command.", ephemeral=True
-            )
+        if not await self._check_admin(interaction):
             return
 
-        csi = str(interaction.guild.id)
-        data = self.read(csi)
-        data[csi]["suggestion_channel"] = channel.id
-        self.write(data)
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["suggestion_channel"] = channel.id
+        await self.update_guild_config(guild_id, config)
 
         await interaction.response.send_message(f"Successfully set the suggestions channel to {channel.mention}", ephemeral=True)
 
