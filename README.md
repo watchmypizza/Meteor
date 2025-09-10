@@ -38,6 +38,8 @@ Currently the bot has an amount of **36** commands. Though the number may vary e
 
 > Have a suggestion? Join the [support server](https://discord.gg/eQ7FHcmHc9) and feel free to suggest your idea!
 
+<sub><sup>Suggestions are manually reviewed by the developers, and they decide if they should be added or not</sup></sub>
+
 # Command Overview
 
 The bot has a total of 36 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
