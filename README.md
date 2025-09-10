@@ -2,9 +2,9 @@
 
 The bot is supposed to be an all-in-one bot for moderation (Dyno), levels (Arcane) and Counting (Counting)
 
-You can use chat commands (UNIX inspired) using the prefix "$ "
+You can use chat commands (UNIX inspired) using the prefix **"$ "**
 
-The space between the command and the prefix is mandatory, or the command won't execute.
+**The space between the command and the prefix is mandatory, or the command won't execute.**
 
 # Command Overview
 
@@ -80,7 +80,7 @@ $ usermod -l <new username> <old username> >> Change the display name of a user
 
 /mute <User> <Duration> <Reason> >> Times a user out for a specified amount of time
 
-/warn <User> <Reason> >> Warns a user for the reason, also sends a DM to the user
+/warn <User> <Reason> >> Warns a user for the reason, also sends a DM to the user automatically
 
 /warnings <User> >> Shows the warnings for a user if they have any. (Looking at your own warnings does not require moderation privileges)
 
