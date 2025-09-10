@@ -36,7 +36,7 @@ Currently the bot has an amount of **36** commands. Though the number may vary e
 
 [ ] Smart automod (Using ollama)
 
-> Have a suggestion? Join the [discord server](https://discord.gg/eQ7FHcmHc9) and feel free to suggest it!
+> Have a suggestion? Join the [support server](https://discord.gg/eQ7FHcmHc9) and feel free to suggest your idea!
 
 # Command Overview
 
