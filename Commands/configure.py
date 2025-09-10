@@ -24,7 +24,8 @@ class configure(commands.Cog):
                 "staff_roles": [],
                 "ann_channel": 0,
                 "bot_role": 0,
-                "mod_logs": 0
+                "mod_logs": 0,
+                "suggestion_channel": 0
             }
         
         return data
@@ -153,6 +154,21 @@ class configure(commands.Cog):
 
         await interaction.response.send_message(f"Successfully set the logging channel to {channel.mention}", ephemeral=True)
 
+    @configure_group.command(name="suggestions", description="Configure the suggestions channel")
+    @app_commands.describe(channel="The suggestions channel")
+    async def suggestions_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message(
+                "You do not have the necessary permissions to use this command.", ephemeral=True
+            )
+            return
+
+        csi = str(interaction.guild.id)
+        data = self.read(csi)
+        data[csi]["suggestion_channel"] = channel.id
+        self.write(data)
+
+        await interaction.response.send_message(f"Successfully set the suggestions channel to {channel.mention}", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(configure(bot))

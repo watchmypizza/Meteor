@@ -12,7 +12,7 @@ You can use chat commands (UNIX inspired) using the prefix **"$ "**
 
 **The space between the command and the prefix is mandatory, or the command won't execute.**
 
-Currently the bot has an amount of **36** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
+Currently the bot has an amount of **37** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
 
 # Roadmap
 
@@ -28,9 +28,9 @@ Currently the bot has an amount of **36** commands. Though the number may vary e
 
 [x] Customisable level roles
 
-[ ] Configurable suggestions channel
+[x] Configurable suggestions channel
 
-[ ] Auto-react to suggestions
+[x] Auto-react to suggestions
 
 [ ] Customisable prefix
 
@@ -63,6 +63,8 @@ The bot has a total of 36 commands (including sub-commands). This number may upd
 /configure modlogs >> Set a dedicated mod-logs channel to log moderation actions
 
 /configure botrole >> Set a role that is the bot role, members under this role will not be counted as members in the $ ls command
+
+/configure suggestions >> Configure a suggestions channel, so the bot can automatically react ✅ and ❌ to the suggestions.
 
 --- Counting Commands ---
 
