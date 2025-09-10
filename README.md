@@ -8,6 +8,22 @@ You can use chat commands (UNIX inspired) using the prefix **"$ "**
 
 Currently the bot has an amount of **36** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
 
+# Roadmap
+
+[x] Base functionality, running bot
+[x] Moderation commands
+[x] Counting commands
+[x] Per-Server configuration
+[x] Level system
+[x] Customisable level roles
+[ ] Customisable prefix
+[ ] Modals and buttons
+[ ] Tickets functionality (Replacing ticketbot)
+[ ] Automod
+[ ] Smart automod (Using ollama)
+
+I will add more to this list depending on suggestions or what I come up with.
+
 # Command Overview
 
 The bot has a total of 36 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
