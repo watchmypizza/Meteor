@@ -1,5 +1,5 @@
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
-![Discord](https://img.shields.io/badge/Discord-Bot-5865F2?logo=discord&logoColor=white)
+[![Discord](https://img.shields.io/badge/Discord-Bot-5865F2?logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1392608420556833030)
 ![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-green.svg)
 ![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9C%94-brightgreen)
 [![Support Server](https://img.shields.io/badge/Discord-Support%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/eQ7FHcmHc9)
