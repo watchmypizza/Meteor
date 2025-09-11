@@ -48,6 +48,18 @@ Currently the bot has an amount of **37** commands. Though the number may vary e
 
 <sub><sup>Suggestions are manually reviewed by the developers, who decide if they should be added.</sup></sub>
 
+# Dashboard
+
+As of right now, there was a dashboard with a proper backend planned. But because Firebase requires a pay as you go plan, I sadly 
+
+cannot create dashboard right now, as I promise that I will keep this project, it's source code and all functionaiity free forever.
+
+But this also comes with bottlenecks as you can see.
+
+TL;DR
+
+Sadly, as of right now, there will be no Dashboard in the near future.
+
 # Command Overview
 
 The bot has a total of 36 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
