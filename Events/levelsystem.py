@@ -92,7 +92,7 @@ class levelsystem(commands.Cog):
             user_level = levels_data[user_id]["level"]
             guild = message.guild
 
-            level_roles = sorted(config_data[server_id]["level_roles"], key=lambda x: x["level"])
+            level_roles = sorted(config_data["level_roles"], key=lambda x: x["level"])
 
             for pair in level_roles:
                 level_required = pair["level"]
@@ -160,7 +160,7 @@ class levelsystem(commands.Cog):
         if before.channel.id in config_data["excluded_level_channels"]:
             return
 
-        if data[csi][str(before.author.id)]["level_lock"] == True:
+        if data[str(before.author.id)]["level_lock"] == True:
             return
 
         if str(before.author.id) not in data:

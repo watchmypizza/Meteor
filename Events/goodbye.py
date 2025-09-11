@@ -1,37 +1,39 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import os, json
+import os
+import dotenv
+from firebase_admin import credentials, firestore
+
+dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+collection_ref = db.collection("serverconfigs")
 
 class goodbye(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.json = "JSONS/serverconfigs.json"
     
-    def read(self, current_server_id):
-        if not os.path.exists(self.json) or os.path.getsize(self.json) == 0:
-            data = {}
-        else:
-            with open(self.json, "r") as f:
-                data = json.load(f)
-        
-        if current_server_id not in data:
-            data[current_server_id] = {
-                "logging_channel": 0,
-                "welcomer_channel": 0
-            }
-        
-        return data
+    async def get_guild_config(self, current_guild_id: str):
+        doc_ref = collection_ref.document(current_guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
     
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         csi = str(member.guild.id)
         if csi is None:
             return
-        data = self.read(csi)
-        if data[csi]["welcomer_channel"] == 0:
+        data = await self.get_guild_config(csi)
+        if data["welcomer_channel"] == 0:
             return
-        channel = discord.utils.get(member.guild.channels, id=data[csi]["welcomer_channel"])
+        channel = discord.utils.get(member.guild.channels, id=data["welcomer_channel"])
         embed = discord.Embed(
             title="Goodbye!",
             description="Goodbye {}, we hope to see you again!".format(member.mention),
