@@ -2,35 +2,35 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from discord import app_commands
-import os, json
+import os
+import dotenv
+from firebase_admin import credentials, firestore
+
+dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+collection_ref = db.collection("serverconfigs")
 
 class memcount(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = "JSONS/serverconfigs.json"
     
-    def read(self, current_server_id):
-        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
-            data = {}
-        else:
-            with open(self.config, "r") as f:
-                data = json.load(f)
-        
-        if current_server_id not in data:
-            data = {
-                "bot_role": 0
-            }
-        
-        if "bot_role" not in data[current_server_id]:
-            data[current_server_id]["bot_role"] = 0
-        
-        return data
+    async def get_guild_configs(self, current_guild_id: str):
+        doc_ref = collection_ref.document(current_guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
 
     @app_commands.command(name="membercount", description="Fetch all members and display as a number.")
     async def membercount(self, interaction: discord.Interaction):
         csi = str(interaction.guild.id)
-        data = self.read(csi)
-        if data[csi]["bot_role"] == 0: 
+        data = await self.get_guild_configs(csi)
+        if data["bot_role"] == 0: 
             mem_count = 0
             for member in interaction.guild.members:
                 mem_count += 1

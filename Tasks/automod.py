@@ -3,29 +3,35 @@ from discord.ext import commands
 import humanfriendly
 from datetime import datetime
 from datetime import timedelta
-import json
+import dotenv
+import os
+from firebase_admin import credentials, firestore
+
+dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+collection_ref = db.collection("forbidden_words")
 
 class automod(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.fp = "JSONS/forbidden_words.json"
-        self.forbidden = self.read()
     
-    def read(self):
-        try:
-            with open(self.fp, "r") as f:
-                data = json.load(f)
-                return data.get("forbidden_words", [])
-        except FileNotFoundError:
-            print(f"Error: {filename} not found. Automod will not use forbidden words.")
-            return []
-        except json.JSONDecodeError:
-            print(f"Error: Could not decode JSON from {filename}. Please check the file format.")
-            return []
+    async def read_forbidden_words(self):
+        doc_ref = collection_ref.document("forbidden_words")
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        for word in self.forbidden:
+        forbidden_words_list = await self.read_forbidden_words()
+        if forbidden_words_list is None:
+            return
+        for word in forbidden_words_list:
             if word in message.content.lower():
                 timeout_duration = humanfriendly.parse_timespan("1 hour")
                 timeout_until = datetime.now().astimezone() + timedelta(seconds=timeout_duration)

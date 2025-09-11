@@ -1,26 +1,29 @@
 import discord
 from discord.ext import commands
-import os, json, asyncio
+import os, asyncio
+import dotenv
+from firebase_admin import credentials, firestore
+
+dotenv.load_dotenv(".env")
+
+service = os.getenv("FIREBASE_JSON")
+
+cred = credentials.Certificate(service)
+
+db = firestore.client()
+collection_ref = db.collection("serverconfigs")
 
 class suggestions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = "JSONS/serverconfigs.json"
     
-    def read(self, current_server_id):
-        if not os.path.exists(self.config) or os.path.getsize(self.config) == 0:
-            data = {}
-        else:
-            with open(self.config, "r") as f:
-                data = json.load(f)
-        
-        if not current_server_id in data:
-            data = {}
-        
-        if not "suggestion_channel" in data[current_server_id]:
-            data[current_server_id]["suggestion_channel"] = 0
-        
-        return data
+    async def get_server_configs(self, current_guild_id: str):
+        doc_ref = collection_ref.document(current_guild_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            return doc.to_dict()
+        return {}
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -31,10 +34,10 @@ class suggestions(commands.Cog):
         if current_server_id is None:
             return
 
-        data = self.read(current_server_id)
+        data = await self.get_server_configs(current_server_id)
 
         try:
-            if data[current_server_id]["suggestion_channel"] != 0 and message.channel.id == data[current_server_id]["suggestion_channel"]:
+            if data["suggestion_channel"] != 0 and message.channel.id == data["suggestion_channel"]:
                 await message.add_reaction("✅")
                 await asyncio.sleep(.1)
                 await message.add_reaction("❌")
