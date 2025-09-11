@@ -13,7 +13,6 @@ env = dotenv.load_dotenv(".env")
 service = os.getenv("FIREBASE_JSON")
 
 cred = credentials.Certificate(service)
-firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 collection_ref = db.collection("serverconfigs")
