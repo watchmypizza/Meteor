@@ -5,12 +5,16 @@ from discord import app_commands
 import os
 import dotenv
 from firebase_admin import credentials, firestore
+import firebase_admin
 
 dotenv.load_dotenv(".env")
 
 service = os.getenv("FIREBASE_JSON")
 
 cred = credentials.Certificate(service)
+
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 collection_ref = db.collection("serverconfigs")
