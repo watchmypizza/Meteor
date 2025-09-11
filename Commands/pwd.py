@@ -8,8 +8,7 @@ class pwdCog(commands.Cog):
 
     @commands.command()
     async def pwd(self, ctx):
-        current_path = os.getcwd()
-        await ctx.send(f"{current_path}")
+        await ctx.send(f"/home/Tux/")
 
 async def setup(bot):
     await bot.add_cog(pwdCog(bot))
