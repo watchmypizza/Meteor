@@ -169,7 +169,7 @@ class configure(commands.Cog):
         guild_id = str(interaction.guild.id)
         config = await self.get_guild_config(guild_id)
         config["prefix"] = prefix
-        await self.update_guild_config(guild_id, data)
+        await self.update_guild_config(guild_id, config)
 
         await interaction.response.send_message("Successfully updated the prefix to {}.".format(prefix), ephemeral=True)
 

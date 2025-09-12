@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 import os, dotenv
 from firebase_admin import credentials, firestore
 import firebase_admin
+from datetime import datetime
 
 dotenv.load_dotenv(".env")
 
@@ -45,13 +46,17 @@ class getPrefix(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if str(message.guild.id) == None:
+        try:
+            if str(message.guild.id) == None:
+                return
+        except AttributeError:
             return
         
-        data = self.serverconfigcache(str(message.guild.id), {})
+        data = self.serverconfigcache.get(str(message.guild.id), {})
         content = message.content
         if data["prefix"] in content[0]:
             print("test")
+            # I still have to implement command execution functionality here
 
 async def setup(bot):
     await bot.add_cog(getPrefix(bot))
