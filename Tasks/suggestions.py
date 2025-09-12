@@ -16,7 +16,6 @@ collection_ref = db.collection("serverconfigs")
 class suggestions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = "JSONS/serverconfigs.json"
     
     async def get_server_configs(self, current_guild_id: str):
         doc_ref = collection_ref.document(current_guild_id)

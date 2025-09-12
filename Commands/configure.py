@@ -34,7 +34,8 @@ class configure(commands.Cog):
             "bot_role": 0,
             "mod_logs": 0,
             "suggestion_channel": 0,
-            "excluded_level_channels": []
+            "excluded_level_channels": [],
+            "prefix": ''
         }
         await self.update_guild_config(guild_id, default)
         return default
@@ -158,6 +159,19 @@ class configure(commands.Cog):
         await self.update_guild_config(guild_id, config)
 
         await interaction.response.send_message(f"Successfully set the suggestions channel to {channel.mention}", ephemeral=True)
+
+    @configure_group.command(name="prefix", description="Set a custom server prefix")
+    @app_commands.describe(prefix="The prefix to set it to.")
+    async def prefix_subcommand(self, interaction: discord.Interaction, prefix: str):
+        if not await self._check_admin(interaction):
+            return
+        
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["prefix"] = prefix
+        await self.update_guild_config(guild_id, data)
+
+        await interaction.response.send_message("Successfully updated the prefix to {}.".format(prefix), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(configure(bot))
