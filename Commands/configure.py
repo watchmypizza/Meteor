@@ -172,6 +172,19 @@ class configure(commands.Cog):
         await self.update_guild_config(guild_id, config)
 
         await interaction.response.send_message("Successfully updated the prefix to {}.".format(prefix), ephemeral=True)
+    
+    @configure_group.command(name="verifiedrole", description="Sets a role to give the user once verified.")
+    @app_commands.describe(role="The role to give the user.")
+    async def verifiedrole_subcommand(self, interaction: discord.Interaction, role: discord.Role):
+        if not await self._check_admin(interaction):
+            return
+        
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["verified_role"] = role.id
+        await self.update_guild_config(guild_id, config)
+
+        await interaction.response.send_message("Successfully updated the verified role to {}.".format(role.mention), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(configure(bot))
