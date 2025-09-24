@@ -12,7 +12,7 @@ You can use chat commands (UNIX inspired) using the prefix **"$ "**
 
 **The space between the command and the prefix is mandatory, or the command won't execute.**
 
-Currently the bot has an amount of **37** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
+Currently the bot has an amount of **39** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
 
 # Roadmap
 
