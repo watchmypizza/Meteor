@@ -66,7 +66,7 @@ Sadly, as of right now, there will be no Dashboard in the near future.
 
 # Command Overview
 
-The bot has a total of 36 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
+The bot has a total of 39 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
 
 --- Configuration Commands ---
 
