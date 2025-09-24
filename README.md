@@ -36,6 +36,8 @@ Currently the bot has an amount of **37** commands. Though the number may vary e
 
 [-] Dashboard
 
+[x] Verification process
+
 [ ] Customisable prefix
 
 [ ] Modals and buttons
@@ -82,6 +84,8 @@ The bot has a total of 36 commands (including sub-commands). This number may upd
 
 /configure suggestions >> Configure a suggestions channel, so the bot can automatically react ✅ and ❌ to the suggestions.
 
+/configure verifiedrole >> Configure the role the bot should give a member after verifying successfully.
+
 --- Counting Commands ---
 
 /counting configure >> Configure the counting aspect of the bot and tweak specific settings
@@ -127,6 +131,8 @@ $ wall <Message> >> Post a message to the announcement channel
 /suki >> A friend of mine suggested to add and name the command as is today, grabs a random cat image and sends a ephemeral
 
 /warnings >> Allows you to view your own warnings displayed as an ephemeral
+
+/verify >> Post the verification message.
 
 --- Moderation ---
 
