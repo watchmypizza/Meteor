@@ -38,11 +38,11 @@ Currently the bot has an amount of **43** commands. Though the number may vary e
 
 [x] Customisable prefix
 
-[ ] Modals and buttons
+[x] Modals and buttons
 
 [ ] Tickets functionality (Replacing ticketbot)
 
-[ ] Automod
+[x] Automod
 
 [ ] Smart automod (Using ollama)
 
