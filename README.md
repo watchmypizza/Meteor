@@ -6,7 +6,7 @@
 
 # What is this bot and how does it work?
 
-The bot is supposed to be an all-in-one bot for moderation (Dyno), levels (Arcane) and Counting (Counting)
+The bot is supposed to be an all-in-one bot for moderation (Dyno), levels (Arcane), Counting (Counting) and Tickets (Ticket tool)
 
 You can use chat commands (UNIX inspired) using the prefix **"$"**
 
