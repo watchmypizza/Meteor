@@ -186,5 +186,18 @@ class configure(commands.Cog):
 
         await interaction.response.send_message("Successfully updated the verified role to {}.".format(role.mention), ephemeral=True)
 
+    @configure_group.command(name="level_channel", description="Set the channel to announce level ups in.")
+    @app_commands.describe(channel="The channel to announce level ups in")
+    async def level_up_chanel(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        if not await self._check_admin(interaction):
+            return
+        
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["level_channel"] = channel.id
+        await self.update_guild_config(guild_id, config)
+
+        await interaction.response.send_message("Successfully set the channel to {}".format(channel.mention), ephemeral=True)
+
 async def setup(bot):
     await bot.add_cog(configure(bot))

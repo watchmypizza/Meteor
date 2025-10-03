@@ -38,7 +38,7 @@ Currently the bot has an amount of **39** commands. Though the number may vary e
 
 [x] Verification process
 
-[ ] Customisable prefix
+[x] Customisable prefix
 
 [ ] Modals and buttons
 

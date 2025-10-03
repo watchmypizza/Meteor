@@ -1,41 +1,59 @@
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 import os
 from dotenv import load_dotenv
-from time import sleep
-import random
-from datetime import datetime
+from collections import defaultdict
 import asyncio
-dotenv = load_dotenv(".env")
+
+
+load_dotenv(".env")
 token = os.getenv("TOKEN")
 
-game = discord.Game(name="StormyXV on YouTube")
 
-bot = commands.Bot(command_prefix="$ ", intents=discord.Intents().all(), activity=game, status=discord.Status.idle, help_command=None)
+game = discord.Game(name="StormyXV on YouTube")
+DEFAULT_PREFIX = "$ "
+
+
+async def dynamic_prefix(bot: commands.Bot, message: discord.Message):
+   if message.guild is None:
+       return DEFAULT_PREFIX
+   gid = str(message.guild.id)
+   cog = (bot.get_cog("getPrefix")
+          or bot.get_cog("RefreshCache")
+          or bot.get_cog("Prefix"))
+   prefix = DEFAULT_PREFIX
+   if cog and getattr(cog, "serverconfigcache", None) is not None:
+       raw = (cog.serverconfigcache.get(gid, {}) or {}).get("prefix", DEFAULT_PREFIX)
+       prefix = str(raw).strip() or DEFAULT_PREFIX
+   return commands.when_mentioned_or(prefix)(bot, message)
+
+
+class TuxBot(commands.Bot):
+   async def setup_hook(self):
+       for folder in ("Commands", "Tasks", "Events"):
+           for filename in os.listdir(f"./{folder}"):
+               if filename.endswith(".py"):
+                   mod = f"{folder}.{filename[:-3]}"
+                   if mod not in self.extensions:
+                       await self.load_extension(mod)
+                       print(f"{filename} loaded")
+
+
+       synced = await self.tree.sync()
+       print("Synced", len(synced), "commands")
+
+
+intents = discord.Intents.all()
+bot = TuxBot(command_prefix=dynamic_prefix,
+            intents=intents,
+            activity=game,
+            status=discord.Status.idle,
+            help_command=None)
+
 
 @bot.event
 async def on_ready():
-    try:
-        # Load cogs
-        for filename in os.listdir("./Commands"):
-            if filename.endswith(".py"):
-                await bot.load_extension(f"Commands.{filename[:-3]}")
-                print(f"{filename} loaded")
-        # Load Task Cogs
-        for filename in os.listdir("./Tasks"):
-            if filename.endswith(".py"):
-                await bot.load_extension(f"Tasks.{filename[:-3]}")
-                print(f"{filename} loaded")
-        # Load Event Cogs
-        for filename in os.listdir("./Events"):
-            if filename.endswith(".py"):
-                await bot.load_extension(f"Events.{filename[:-3]}")
-                print(f"{filename} loaded")
-        # Sync commands
-        synced = await bot.tree.sync()
-        print("Synced " + str(len(synced)) + " commands")
-        print("Logged in as " + str(bot.user.name))
-    except Exception as e:
-        print(e)
+   print("Logged in as", bot.user)
+
 
 bot.run(token)

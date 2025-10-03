@@ -13,6 +13,9 @@ service = os.getenv("FIREBASE_JSON")
 
 cred = credentials.Certificate(service)
 
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
+
 db = firestore.client()
 serverconfigs = db.collection("serverconfigs")
 
