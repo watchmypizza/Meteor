@@ -10,7 +10,7 @@ The bot is supposed to be an all-in-one bot for moderation (Dyno), levels (Arcan
 
 You can use chat commands (UNIX inspired) using the prefix **"$"**
 
-Currently the bot has an amount of **43** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
+Currently the bot has an amount of **48** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
 
 # Roadmap
 
@@ -65,7 +65,7 @@ Sadly, as of right now, there will be no Dashboard in the near future.
 
 # Command Overview
 
-The bot has a total of 43 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
+The bot has a total of 48 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
 
 --- Configuration Commands ---
 
