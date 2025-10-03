@@ -57,7 +57,7 @@ class ticketsystem(commands.Cog):
     def generate_ticket_handle(self):
         return ''.join(random.choices('abcdefghijklmnopqrstuvwxyz0123456789', k=6))
 
-    class ticketView(View):
+    class ticketViewOrigServer(View):
         def __init__(self, bot):
             super().__init__(timeout=None)
             self.bot = bot
@@ -79,6 +79,23 @@ class ticketsystem(commands.Cog):
         async def issue_callback(self, interaction: discord.Interaction):
             generated_handle = self.bot.get_cog("ticketsystem").generate_ticket_handle()
             modal = self.bot.get_cog("ticketsystem").issueReportModal(self.bot, generated_handle)
+            await interaction.response.send_modal(modal)
+
+    class ticketView(View):
+        def __init__(self, bot):
+            super().__init__(timeout=None)
+            self.bot = bot
+
+            button = Button(label="Report Member", style=ButtonStyle.red, custom_id="report_member")
+            issue = Button(label="Verification issues", style=ButtonStyle.blurple, custom_id="verify_issue")
+
+            button.callback = self.report_member_callback
+
+            self.add_item(button)
+        
+        async def report_member_callback(self, interaction: discord.Interaction):
+            generated_handle = self.bot.get_cog("ticketsystem").generate_ticket_handle()
+            modal = self.bot.get_cog("ticketsystem").userReportModal(self.bot, generated_handle)
             await interaction.response.send_modal(modal)
     
     class closeTicketView(View):
@@ -165,13 +182,19 @@ class ticketsystem(commands.Cog):
             guild_id = str(interaction.guild.id)
             config = await self.bot.get_cog("ticketsystem").get_guild_config(guild_id)
             staff_role = discord.utils.get(interaction.guild.roles, id=config["staff_roles"])
-            category = discord.utils.get(interaction.guild.categories, id=config["ticket_category"])
+            if config["ticket_category"]:
+                category = discord.utils.get(interaction.guild.categories, id=config["ticket_category"])
             overwrites = {
                 interaction.guild.default_role: discord.PermissionOverwrite(view_channel=False),
                 interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True, embed_links=True),
                 staff_role: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True, embed_links=True, manage_channels=True) 
             }
-            channel = await interaction.guild.create_text_channel(name="ticket-" + self.generated_handle, category=category, overwrites=overwrites)
+
+            if config["ticket_category"]:
+                channel = await interaction.guild.create_text_channel(name="bug-" + self.generated_handle, category=category, overwrites=overwrites)
+            else:
+                channel = await interaction.guild.create_text_channel(name="bug-" + self.generated_handle, overwrites=overwrites)
+
             ticketlogs = discord.utils.get(interaction.guild.channels, id=config["ticketlogs"])
             embed = discord.Embed(
                 title="Member Report",
@@ -218,13 +241,19 @@ class ticketsystem(commands.Cog):
             guild_id = str(interaction.guild.id)
             config = await self.bot.get_cog("ticketsystem").get_guild_config(guild_id)
             staff_role = discord.utils.get(interaction.guild.roles, id=config["staff_roles"])
-            category = discord.utils.get(interaction.guild.categories, id=config["ticket_category"])
+            if config["ticket_category"]:
+                category = discord.utils.get(interaction.guild.categories, id=config["ticket_category"])
             overwrites = {
                 interaction.guild.default_role: discord.PermissionOverwrite(view_channel=False),
                 interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True, embed_links=True),
                 staff_role: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True, embed_links=True, manage_channels=True) 
             }
-            channel = await interaction.guild.create_text_channel(name="bug-" + self.generated_handle, category=category, overwrites=overwrites)
+
+            if config["ticket_category"]:
+                channel = await interaction.guild.create_text_channel(name="bug-" + self.generated_handle, category=category, overwrites=overwrites)
+            else:
+                channel = await interaction.guild.create_text_channel(name="bug-" + self.generated_handle, overwrites=overwrites)
+
             ticketlogs = discord.utils.get(interaction.guild.channels, id=config["ticketlogs"])
             embed = discord.Embed(
                 title="Bug Report",
@@ -248,12 +277,27 @@ class ticketsystem(commands.Cog):
         if not await self._check_admin(interaction):
             return
         
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+
+        if config["staff_roles"] == 0:
+            await interaction.response.send_message("Please configure the ticket system with /configure staff")
+            return
+        
+        if config["ticketlogs"] == 0:
+            await interaction.response.send_message("Please configure the ticket system with /configure ticketlogs")
+            return
+
         embed = discord.Embed(
             title="Problem? Create a ticket!",
             description="You can create a ticket for multiple things, such as a member violating the rules or you having a question! Our staff are there to help you.",
             color=discord.Color.dark_purple()
         )
-        view = ticketsystem.ticketView(self.bot)
+
+        if interaction.user.id == 1116315001330880602:
+            view = ticketsystem.ticketViewOrigServer(self.bot)
+        else:
+            view = ticketsystem.ticketView(self.bot)
 
         await interaction.channel.send(embed=embed, view=view)
     

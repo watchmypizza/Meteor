@@ -89,7 +89,11 @@ The bot has a total of 43 commands (including sub-commands). This number may upd
 
 /configure resetprefix >> Reset the prefix to the default one.
 
-/configure prefix >> Set a custom prefix-
+/configure prefix >> Set a custom prefix.
+
+/configure staff >> Set a custom staff role (needed for ticket system)
+
+/configure ticketlogs >> Set a custom ticket logs channel (needed for ticket system)
 
 (customprefix)newprefix >> Same as configuring a new prefix.
 
@@ -156,3 +160,11 @@ $ usermod -l <new username> <old username> >> Change the display name of a user
 /warnings <User> >> Shows the warnings for a user if they have any. (Looking at your own warnings does not require moderation privileges)
 
 /removewarn <User> <Number> >> Remove a warning from a user, you can view the number of warnings of a specific user by executing above command.
+
+--- Ticket System ---
+
+/ticketsystem setup >> Sets the ticket system up and sends a embed in the current channel with the buttons
+
+/ticketsystem category >> Set a category for tickets to be created in.
+
+/ticketsystem close >> Archives the ticket.
