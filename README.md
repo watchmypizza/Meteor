@@ -42,7 +42,7 @@ Currently the bot has an amount of **43** commands. Though the number may vary e
 
 [x] Automod
 
-[ ] Tickets functionality (Replacing ticketbot)
+[x] Tickets functionality (Replacing ticketbot)
 
 [ ] Smart automod (Using ollama)
 

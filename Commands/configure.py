@@ -212,7 +212,7 @@ class configure(commands.Cog):
 
     @configure_group.command(name="level_channel", description="Set the channel to announce level ups in.")
     @app_commands.describe(channel="The channel to announce level ups in")
-    async def level_up_chanel(self, interaction: discord.Interaction, channel: discord.TextChannel):
+    async def level_up_channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
         if not await self._check_admin(interaction):
             return
         
@@ -222,6 +222,30 @@ class configure(commands.Cog):
         await self.update_guild_config(guild_id, config)
 
         await interaction.response.send_message("Successfully set the channel to {}".format(channel.mention), ephemeral=True)
+
+    @configure_group.command(name="staff", description="This is needed for the tickets to work.")
+    @app_commands.describe(staff_role="The staff role for the tickets")
+    async def staff_subcommand(self, interaction: discord.Interaction, staff_role: discord.Role):
+        if not await self._check_admin(interaction):
+            return
+
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["staff_roles"] = staff_role.id
+        await self.update_guild_config(guild_id, config)
+        await interaction.response.send_message("Successfully set the staff role to {}!".format(staff_role.mention), ephemeral=True)
+
+    @configure_group.command(name="ticketlogs", description="The channel to log ticket creation / deletion in.")
+    @app_commands.describe(channel="The channel to log the tickets in")
+    async def ticketlogs_subcommand(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        if not await self._check_admin(interaction):
+            return
+
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["ticketlogs"] = channel.id
+        await self.update_guild_config(guild_id, config)
+        await interaction.response.send_message("Successfully set the ticket logs channel to {}!".format(channel.mention), ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(configure(bot))

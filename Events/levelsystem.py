@@ -7,6 +7,8 @@ from firebase_admin import credentials, firestore
 import firebase_admin
 from datetime import datetime
 from typing import Optional
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 env = dotenv.load_dotenv(".env")
 
@@ -183,75 +185,150 @@ class levelsystem(commands.Cog):
                 data[str(before.author.id)]["total_xp"] -= 5
             await self.write_levels(data, csi)
 
+    def _kfmt(self, n: int) -> str:
+        if n >= 1_000_000_000:
+            v = n / 1_000_000_000.0
+            return (f"{v:.1f}".rstrip("0").rstrip(".")) + "B"
+        if n >= 1_000_000:
+            v = n / 1_000_000.0
+            return (f"{v:.1f}".rstrip("0").rstrip(".")) + "M"
+        if n >= 1_000:
+            v = n / 1_000.0
+            return (f"{v:.1f}".rstrip("0").rstrip(".")) + "K"
+        return str(n)
+
+    def _pick_font(self, size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
+        preferred = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+        try:
+            return ImageFont.truetype(preferred, size=size)
+        except Exception:
+            return ImageFont.load_default()
+
+    async def _get_avatar_circle(self, member: discord.Member, size: int = 128) -> Image.Image:
+        avatar = member.display_avatar.with_size(512)
+        b = await avatar.read()
+        im = Image.open(BytesIO(b)).convert("RGBA").resize((size, size), Image.LANCZOS)
+
+        mask = Image.new("L", (size, size), 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse((0, 0, size, size), fill=255)
+        im.putalpha(mask)
+        return im
+
+    def _rounded_rect(self, draw: ImageDraw.ImageDraw, xy, radius: int, fill=None, outline=None, width: int = 1):
+        # xy = [x1, y1, x2, y2]
+        x1, y1, x2, y2 = xy
+        w = x2 - x1
+        h = y2 - y1
+        r = min(radius, w//2, h//2)
+        if fill is not None:
+            draw.rounded_rectangle(xy, radius=r, fill=fill)
+        if outline is not None and width > 0:
+            draw.rounded_rectangle(xy, radius=r, outline=outline, width=width)
+
+    async def _render_level_card(
+        self,
+        member: discord.Member,
+        level: int,
+        xp: int,
+        xp_needed: int,
+        rank_index: int | None = None,
+        width: int = 800,
+        height: int = 200,
+    ) -> BytesIO:
+        bg = (30, 34, 39, 255)            # dark slate
+        accent = (38, 195, 195, 255)      # teal
+        light = (241, 244, 247, 255)      # near white
+        mid = (50, 55, 62, 255)           # card inner
+        line = (9, 64, 116, 255)          # progress bar
+        white = (255, 255, 255, 255)
+
+        im = Image.new("RGBA", (width, height), bg)
+        d = ImageDraw.Draw(im)
+
+        diagonal = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        dd = ImageDraw.Draw(diagonal)
+        dd.polygon([(width*0.72, 0), (width, 0), (width, height), (width*0.6, height)], fill=accent)
+        im.alpha_composite(diagonal)
+
+        avatar = await self._get_avatar_circle(member, size=96)
+        im.alpha_composite(avatar, (20, (height - 96)//2))
+
+        username_font = self._pick_font(30, bold=True)
+        sub_font = self._pick_font(20, bold=False)
+        small_font = self._pick_font(18, bold=False)
+
+        name_text = f"@{member.name}"
+        name_x = 140
+        name_y = 28
+        d.text((name_x, name_y), name_text, font=username_font, fill=white)
+
+        name_w = d.textlength(name_text, font=username_font)
+        d.line((name_x, name_y + 36, name_x + name_w, name_y + 36), fill=accent, width=4)
+
+        rank_str = f"Rank: {rank_index + 1}" if rank_index is not None else ""
+        xp_str = f"XP: {self._kfmt(xp)} / {self._kfmt(xp_needed)}"
+        lvl_str = f"Level: {level}"
+
+        top_line = f"{lvl_str}    {xp_str}"
+        if rank_str:
+            top_line += f"    {rank_str}"
+        d.text((name_x, name_y + 50), top_line, font=sub_font, fill=white)
+
+        bar_x1 = 140
+        bar_y1 = 120
+        bar_x2 = width - 30
+        bar_y2 = bar_y1 + 24
+        self._rounded_rect(d, (bar_x1, bar_y1, bar_x2, bar_y2), radius=12, fill=light)
+
+        pct = 0.0 if xp_needed <= 0 else max(0.0, min(1.0, xp / float(xp_needed)))
+        fill_w = int((bar_x2 - bar_x1) * pct)
+        if fill_w > 0:
+            self._rounded_rect(d, (bar_x1, bar_y1, bar_x1 + fill_w, bar_y2), radius=12, fill=line)
+
+        xp_marker = f"{self._kfmt(xp)}/{self._kfmt(xp_needed)}"
+        marker_w = d.textlength(xp_marker, font=small_font)
+        d.text((bar_x2 - marker_w, bar_y1 - 24), xp_marker, font=small_font, fill=white)
+
+        out = BytesIO()
+        im.save(out, format="PNG")
+        out.seek(0)
+        return out
+
     levelgroup = app_commands.Group(name="level", description="Check your level and xp")
     @levelgroup.command(name="show", description="Check your level and xp")
-    @app_commands.describe(user="The user to check the level of.")
-    async def level(self, interaction: discord.Interaction, user: Optional[discord.Member]):
-        csi = str(interaction.guild.id)
-        if csi == None:
-            return
-        if user:
-            data = await self.get_levels(csi)
-            if str(user.id) not in data:
-                await interaction.response.send_message("This user does not have any stats to show!")
-                return
-            
-            xp = data[str(user.id)]["xp"]
-            level = data[str(user.id)]["level"]
-            xp_needed = data[str(user.id)]["xp_needed"]
+    @app_commands.describe(user="User to show (optional)")
+    async def showlevel(self, interaction: discord.Interaction, user: Optional[discord.Member] = None):
+        await interaction.response.defer()
+        guild = interaction.guild
+        csi = str(guild.id)
 
-            embed = discord.Embed(
-                title=user.name,
-                description=f"Level: {level}\nXP: {xp}\nXP until next level: {xp_needed}",
-                color=discord.Color.random()
-            )
-            
-            embed.set_footer(text="Today at " + self.time_now)
-            await interaction.response.send_message(embed=embed)
-            return
-        
         data = await self.get_levels(csi)
+        if not data:
+            return await interaction.followup.send("No level data for this server yet.")
 
-        user_id = str(interaction.user.id)
-        if user_id not in data:
-            data[user_id] = {"xp": 0, "level": 0, "xp_needed": 50}
+        member = user or interaction.user
+        uid = str(member.id)
+        if uid not in data:
+            data[uid] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False, "total_xp": 0}
+            await self.write_levels(data, csi)
 
-        user_data = data[user_id]
-        xp = user_data["xp"]
-        level = user_data["level"]
-        xp_needed = user_data["xp_needed"]
+        stats = data[uid]
+        level = int(stats.get("level", 0))
+        xp = int(stats.get("xp", 0))
+        xp_needed = int(stats.get("xp_needed", 50))
 
-        embed = discord.Embed(
-            title=interaction.user.name,
-            description=f"Level: {level}\nXP: {xp}\nXP until next level: {xp_needed}",
-            color=discord.Color.random()
-        )
-        embed.set_footer(text="Today at " + self.time_now)
-        await interaction.response.send_message(embed=embed)
-    
-    @levelgroup.command(name="lock", description="Lock a user's level.")
-    @app_commands.describe(user="The user to level lock")
-    async def levellock(self, interaction: discord.Interaction, user: discord.Member):
-        if not interaction.user.guild_permissions.moderate_members:
-            await interaction.response.send_message("You do not have permission to use this command.")
-            return
-        
-        csi = str(interaction.guild.id)
-        if csi == None:
-            return
-        
-        data = self.get_levels(csi)
-        if str(user.id) not in data:
-            data[str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
-        
-        if data[str(user.id)]["level_lock"] == True:
-            data[str(user.id)]["level_lock"] = False
-            await interaction.response.send_message("Level has been unlocked for user {}.".format(user.mention), ephemeral=True)
-        else:
-            data[str(user.id)]["level_lock"] = True
-            await interaction.response.send_message("Level has been locked for user {}.".format(user.mention), ephemeral=True)
-        
-        await self.write_levels(data, csi)
+        users = data
+        sorted_users = sorted(users.items(), key=lambda x: x[1].get("total_xp", 0), reverse=True)
+        rank_index = None
+        for i, (k, _) in enumerate(sorted_users):
+            if k == uid:
+                rank_index = i
+                break
+
+        img = await self._render_level_card(member, level, xp, xp_needed, rank_index=rank_index)
+        file = discord.File(img, filename="rank_card.png")
+        await interaction.followup.send(file=file)
     
     @levelgroup.command(name="set", description="Set a user's level.")
     @app_commands.describe(user="User to moderate", operation="The operation to execute", value="The level to set the user to.")
@@ -273,7 +350,7 @@ class levelsystem(commands.Cog):
             data[str(user.id)] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False}
 
         if operation == "level":
-            calculated_xp_needed = 50 + (value ** 2 * 100)
+            calculated_xp_needed = 50 + (value ** 1.2 * 100)
             data[str(user.id)]["level"] = value
             data[str(user.id)]["xp_needed"] = calculated_xp_needed
             await interaction.response.send_message("Level has been set to {} for user {}.".format(value, user.mention), ephemeral=True)
