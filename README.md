@@ -16,7 +16,9 @@ Currently the bot has an amount of **48** commands. Though the number may vary e
 
 - 🛠️ Moderation tools
 
-- 📈 XP & level system with roles
+- 📈 XP & level system with roles and rank cards
+
+[Example Rank Card](https://raw.githubusercontent.com/watchmypizza/TuxBot/refs/heads/main/example_rank_card.png)
 
 - 🔢 Counting game
 
