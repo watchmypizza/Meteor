@@ -24,7 +24,9 @@ Example Rank Card: ![Example Rank Card](./example_rank_card.png "Example Rank Ca
 
 - 🎟️ Ticket system with buttons
 
-Example Ticket System: ![Example Ticket System](./example_ticket_system.png "Example Ticket System")
+Example Ticket System:
+
+[Example Ticket System](./example_ticket_system.png "Example Ticket System")
 
 - ⚙️ Per-server configuration
 
