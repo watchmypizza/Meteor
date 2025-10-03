@@ -43,7 +43,6 @@ class getPrefix(commands.Cog):
    def cog_unload(self):
        self.refresh_cache.cancel()
 
-
    @commands.Cog.listener()
    async def on_message(self, message: discord.Message):
        if message.author.bot:
