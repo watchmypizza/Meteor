@@ -67,104 +67,120 @@ Sadly, as of right now, there will be no Dashboard in the near future.
 
 The bot has a total of 48 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
 
---- Configuration Commands ---
+<details>
+<summary>Configuration Commands</summary>
 
-/configure levelroles >> Configure levelroles to add / remove them (you can add as many as you want)
+- /configure levelroles >> Configure levelroles to add / remove them (you can add as many as you want)
 
-/configure logging >> Select a message logging channel
+- /configure logging >> Select a message logging channel
 
-/configure welcomer >> Select a channel like #welcome for welcome and goodbye messages
+- /configure welcomer >> Select a channel like #welcome for welcome and goodbye messages
 
-/configure announcement >> Select a announcement channel for the $ wall command
+- /configure announcement >> Select a announcement channel for the $ wall command
 
-/configure modlogs >> Set a dedicated mod-logs channel to log moderation actions
+- /configure modlogs >> Set a dedicated mod-logs channel to log moderation actions
 
-/configure botrole >> Set a role that is the bot role, members under this role will not be counted as members in the $ ls command
+- /configure botrole >> Set a role that is the bot role, members under this role will not be counted as members in the $ ls command
 
-/configure suggestions >> Configure a suggestions channel, so the bot can automatically react ✅ and ❌ to the suggestions.
+- /configure suggestions >> Configure a suggestions channel, so the bot can automatically react ✅ and ❌ to the suggestions.
 
-/configure verifiedrole >> Configure the role the bot should give a member after verifying successfully.
+- /configure verifiedrole >> Configure the role the bot should give a member after verifying successfully.
 
-/configure level_channel >> Configure the level channel to post level up announcements in.
+- /configure level_channel >> Configure the level channel to post level up announcements in.
 
-/configure resetprefix >> Reset the prefix to the default one.
+- /configure resetprefix >> Reset the prefix to the default one.
 
-/configure prefix >> Set a custom prefix.
+- /configure prefix >> Set a custom prefix.
 
-/configure staff >> Set a custom staff role (needed for ticket system)
+- /configure staff >> Set a custom staff role (needed for ticket system)
 
-/configure ticketlogs >> Set a custom ticket logs channel (needed for ticket system)
+- /configure ticketlogs >> Set a custom ticket logs channel (needed for ticket system)
 
-(customprefix)newprefix >> Same as configuring a new prefix.
+- (customprefix)newprefix >> Same as configuring a new prefix.
 
---- Counting Commands ---
+</details>
 
-/counting configure >> Configure the counting aspect of the bot and tweak specific settings
+<details>
+<summary>Counting Commands</summary>
 
-/counting reset >> Reset the current count
+- /counting configure >> Configure the counting aspect of the bot and tweak specific settings
 
-/counting channel >> (mandatory) Select a dedicated counting channel (ex. #counting)
+- /counting reset >> Reset the current count
 
-/counting start >> Start counting in the counting channel
+- /counting channel >> (mandatory) Select a dedicated counting channel (ex. #counting)
 
-/counting stop >> Stop / pause counting in the counting channel (This will not reset your count)
+- /counting start >> Start counting in the counting channel
 
---- Level Commands ---
+- /counting stop >> Stop / pause counting in the counting channel (This will not reset your count)
+</details>
 
-/level show >> Show the level of yourself or from another user
+<details>
+<summary>Level Commands</summary>
 
-/level lock >> Lock a user's level and XP
+- /level show >> Show the level of yourself or from another user
 
-/level set >> Set the level/XP of a user
+- /level lock >> Lock a user's level and XP
 
-/level exclude >> Exclude a channel from earning XP (ex. #counting, #spam)
+- /level set >> Set the level/XP of a user
 
-/level leaderboard >> Display the levelling leaderboard of your server
+- /level exclude >> Exclude a channel from earning XP (ex. #counting, #spam)
 
---- Miscellaneous ---
+- /level leaderboard >> Display the levelling leaderboard of your server
+</details>
 
-$ ls >> Shows information about the server
+<details>
+<summary>Miscellaneous</summary>
 
-$ cat >> Open a file that is in the GitHub repo in read mode
+- $ ls >> Shows information about the server
 
-$ pwd >> Show the current path the bot is running on
+- $ cat >> Open a file that is in the GitHub repo in read mode
 
-$ man <Command> >> Shows a description of the command
+- $ pwd >> Show the current path the bot is running on
 
-$ wall <Message> >> Post a message to the announcement channel
+- $ man <Command> >> Shows a description of the command
 
-/latency >> Measure your latency to the bot
+- $ wall <Message> >> Post a message to the announcement channel
 
-/membercount >> Show the current membercount (this excludes the bot role aswell)
+- /latency >> Measure your latency to the bot
 
-/slash >> This is the first slash command added to the bot, it serves to get the active developer badge
+- /membercount >> Show the current membercount (this excludes the bot role aswell)
 
-/suki >> A friend of mine suggested to add and name the command as is today, grabs a random cat image and sends a ephemeral
+- /slash >> This is the first slash command added to the bot, it serves to get the active developer badge
 
-/warnings >> Allows you to view your own warnings displayed as an ephemeral
+- /suki >> A friend of mine suggested to add and name the command as is today, grabs a random cat image and sends a ephemeral
 
-/verify >> Post the verification message.
+- /warnings >> Allows you to view your own warnings displayed as an ephemeral
 
---- Moderation ---
+- /verify >> Post the verification message.
 
-$ rm -r(f) <User> --message <Reason> >> The option -rf bans a user, the option -r only kicks a user.
+</details>
 
-$ clear >> Clear a specific amount of messages
+<details>
+<summary>Moderation</summary>
 
-$ usermod -l <new username> <old username> >> Change the display name of a user
+- $ rm -r(f) <User> --message <Reason> >> The option -rf bans a user, the option -r only kicks a user.
 
-/mute <User> <Duration> <Reason> >> Times a user out for a specified amount of time
+- $ clear >> Clear a specific amount of messages
 
-/warn <User> <Reason> >> Warns a user for the reason, also sends a DM to the user automatically
+- $ usermod -l <new username> <old username> >> Change the display name of a user
 
-/warnings <User> >> Shows the warnings for a user if they have any. (Looking at your own warnings does not require moderation privileges)
+- /mute <User> <Duration> <Reason> >> Times a user out for a specified amount of time
 
-/removewarn <User> <Number> >> Remove a warning from a user, you can view the number of warnings of a specific user by executing above command.
+- /warn <User> <Reason> >> Warns a user for the reason, also sends a DM to the user automatically
 
---- Ticket System ---
+- /warnings <User> >> Shows the warnings for a user if they have any. (Looking at your own warnings does not require moderation privileges)
 
-/ticketsystem setup >> Sets the ticket system up and sends a embed in the current channel with the buttons
+- /removewarn <User> <Number> >> Remove a warning from a user, you can view the number of warnings of a specific user by executing above command.
 
-/ticketsystem category >> Set a category for tickets to be created in.
+</details>
 
-/ticketsystem close >> Archives the ticket.
+<details>
+<summary>Ticket Commands</summary>
+
+- /ticketsystem setup >> Sets the ticket system up and sends a embed in the current channel with the buttons
+
+- /ticketsystem category >> Set a category for tickets to be created in.
+
+- /ticketsystem close >> Archives the ticket.
+
+</details>
