@@ -1,4 +1,4 @@
-[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)](https://www.python.org/downloads/release/python-3110/)
+[![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)](https://www.python.org/downloads/release/python-3130/)
 [![Discord](https://img.shields.io/badge/Discord-Bot-5865F2?logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1392608420556833030)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-green.svg)](https://github.com/watchmypizza/TuxBot?tab=GPL-2.0-1-ov-file#)
 [![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9C%94-brightgreen)](https://github.com/watchmypizza/TuxBot/issues)
