@@ -89,14 +89,7 @@ FIREBASE_JSON=Relative path to your firebase json (Example: JSONS/xxxxxxx-fireba
 
 # Dashboard
 
-As of right now, there was a dashboard with a proper backend planned. But because Firebase requires a pay as you go plan, I sadly 
-cannot create a dashboard right now. As I promise that I will keep this project, it's source code and all functionaiity free forever.
-
-But this also comes with bottlenecks as you can see.
-
-TL;DR
-
-Sadly, as of right now, there will be no Dashboard in the near future.
+Currently, a dashboard isn’t available due to Firebase billing. The bot and all its features will remain free and open-source.
 
 # Command Overview
 
