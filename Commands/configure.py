@@ -173,6 +173,30 @@ class configure(commands.Cog):
 
         await interaction.response.send_message("Successfully updated the prefix to {}.".format(prefix), ephemeral=True)
     
+    @commands.command(name="newprefix")
+    async def newprefix(self, ctx, prefix: str):
+        if not ctx.author.guild_permissions.administrator:
+            return
+        
+        guild_id = str(ctx.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["prefix"] = prefix
+        await self.update_guild_config(guild_id, config)
+
+        await ctx.send("Successfully updated the prefix to {}.".format(prefix))
+    
+    @configure_group.command(name="resetprefix", description="Reset the current prefix back to default")
+    async def resetprefix_subcommand(self, interaction: discord.Interaction):
+        if not await self._check_admin(interaction):
+            return
+        
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        config["prefix"] = "$ "
+        await self.update_guild_config(guild_id, config)
+
+        await interaction.response.send_message("Successfully reset the prefix to {}.".format(config["prefix"]), ephemeral=True)
+    
     @configure_group.command(name="verifiedrole", description="Sets a role to give the user once verified.")
     @app_commands.describe(role="The role to give the user.")
     async def verifiedrole_subcommand(self, interaction: discord.Interaction, role: discord.Role):

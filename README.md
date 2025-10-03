@@ -8,11 +8,9 @@
 
 The bot is supposed to be an all-in-one bot for moderation (Dyno), levels (Arcane) and Counting (Counting)
 
-You can use chat commands (UNIX inspired) using the prefix **"$ "**
+You can use chat commands (UNIX inspired) using the prefix **"$"**
 
-**The space between the command and the prefix is mandatory, or the command won't execute.**
-
-Currently the bot has an amount of **39** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
+Currently the bot has an amount of **43** commands. Though the number may vary every time the bot updates. Don't expect this number to be updated everytime there is a new command.
 
 # Roadmap
 
@@ -65,7 +63,7 @@ Sadly, as of right now, there will be no Dashboard in the near future.
 
 # Command Overview
 
-The bot has a total of 39 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
+The bot has a total of 43 commands (including sub-commands). This number may update every once in a while, but don't expect it to be often.
 
 --- Configuration Commands ---
 
@@ -84,6 +82,14 @@ The bot has a total of 39 commands (including sub-commands). This number may upd
 /configure suggestions >> Configure a suggestions channel, so the bot can automatically react ✅ and ❌ to the suggestions.
 
 /configure verifiedrole >> Configure the role the bot should give a member after verifying successfully.
+
+/configure level_channel >> Configure the level channel to post level up announcements in.
+
+/configure resetprefix >> Reset the prefix to the default one.
+
+/configure prefix >> Set a custom prefix-
+
+(customprefix)newprefix >> Same as configuring a new prefix.
 
 --- Counting Commands ---
 

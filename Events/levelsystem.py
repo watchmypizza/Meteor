@@ -81,12 +81,12 @@ class levelsystem(commands.Cog):
         levels_data[user_id]["xp"] += 5
         levels_data[user_id]["total_xp"] += 5
         if levels_data[user_id]["xp"] >= levels_data[user_id]["xp_needed"]:
-            new_levels = levels_data[user_id]["level"] + 1
+            levels_data[user_id]["level"] += 1
             levels_data[user_id]["xp"] = 0
             levels_data[user_id]["xp_needed"] += 50 + (levels_data[user_id]["level"] ** 2 * 100)
 
             embed = discord.Embed(
-                description=f"{message.author.mention} leveled up to level {new_levels}!"
+                description=f"{message.author.mention} leveled up to level {levels_data[user_id]["level"]}!"
             )
 
             channel = config_data["level_channel"]
