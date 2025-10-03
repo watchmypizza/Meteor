@@ -40,11 +40,13 @@ Currently the bot has an amount of **43** commands. Though the number may vary e
 
 [x] Modals and buttons
 
-[ ] Tickets functionality (Replacing ticketbot)
-
 [x] Automod
 
+[ ] Tickets functionality (Replacing ticketbot)
+
 [ ] Smart automod (Using ollama)
+
+[ ] Raid-preventive commands
 
 > Have a suggestion? Join the [support server](https://discord.gg/eQ7FHcmHc9) and feel free to suggest your idea!
 
