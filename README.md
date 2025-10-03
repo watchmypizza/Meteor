@@ -28,7 +28,9 @@ Example Ticket System:
 
 ![Example Ticket System](./example_ticket_system.png "Example Ticket System")
 
-- ⚙️ Per-server configuration with Firebase <img src="./firebase-logo-vertical.png" alt="Firebase" width="48">
+- ⚙️ Per-server configuration with Firebase 
+
+<img src="./firebase-logo-vertical.png" alt="Firebase" width="128">
 
 # Installation
 
