@@ -5,14 +5,11 @@ from dotenv import load_dotenv
 from collections import defaultdict
 import asyncio
 
-
 load_dotenv(".env")
 token = os.getenv("TOKEN")
 
-
 game = discord.Game(name="StormyXV on YouTube")
 DEFAULT_PREFIX = "$ "
-
 
 async def dynamic_prefix(bot: commands.Bot, message: discord.Message):
    if message.guild is None:
@@ -27,7 +24,6 @@ async def dynamic_prefix(bot: commands.Bot, message: discord.Message):
        prefix = str(raw).strip() or DEFAULT_PREFIX
    return commands.when_mentioned_or(prefix)(bot, message)
 
-
 class TuxBot(commands.Bot):
    async def setup_hook(self):
        for folder in ("Commands", "Tasks", "Events"):
@@ -38,10 +34,8 @@ class TuxBot(commands.Bot):
                        await self.load_extension(mod)
                        print(f"{filename} loaded")
 
-
        synced = await self.tree.sync()
        print("Synced", len(synced), "commands")
-
 
 intents = discord.Intents.all()
 bot = TuxBot(command_prefix=dynamic_prefix,
@@ -50,10 +44,8 @@ bot = TuxBot(command_prefix=dynamic_prefix,
             status=discord.Status.idle,
             help_command=None)
 
-
 @bot.event
 async def on_ready():
    print("Logged in as", bot.user)
-
 
 bot.run(token)
