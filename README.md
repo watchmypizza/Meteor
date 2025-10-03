@@ -30,7 +30,7 @@ Example Ticket System:
 
 - ⚙️ Per-server configuration with Firestore 
 
-<img src="./firebase-logo-vertical.png" alt="Firebase" width="128">
+<img src="./firebase-logo-vertical.png" alt="Firebase" width="64">
 
 # Installation
 
