@@ -34,7 +34,7 @@ class verify(commands.Cog):
         return default
     
     def generate_code(self):
-        return ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789', k=6))
+        return ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789', k=6))
 
     class VerifyView(discord.ui.View):
         def __init__(self, bot):
