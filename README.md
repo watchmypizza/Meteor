@@ -38,7 +38,7 @@ Example Ticket System:
 
 - `pip install -r requirements.txt`
 
-- Create a new JSONS folder with your firebase console JSON, aswell create a new .env file in your root directory of the project.
+- Create a `JSONS/` folder, place your Firebase service account JSON inside it, and create a `.env` file in the project root.
 
 - Contents of the env are:
 
