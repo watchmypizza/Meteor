@@ -106,6 +106,8 @@ echo 'Thanks for downloading and using my project! If you enjoy working on my pr
 
 [x] Raid-preventive commands
 
+[ ] Binaries for windows & linux to just use it for your own bot
+
 I'll add more to the roadmap, but for now we are done with basic commands. Always be prepared for more to come though!
 
 > Have a suggestion? Join the [support server](https://discord.gg/eQ7FHcmHc9) and feel free to suggest your idea!
