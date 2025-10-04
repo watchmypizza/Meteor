@@ -148,6 +148,8 @@ The bot has a total of 48 commands (including sub-commands). This number may upd
 
 - (customprefix)newprefix →  Same as configuring a new prefix.
 
+- /configure aiautomod →  Enable or disable the AI automod for your server.
+
 </details>
 
 <details>
