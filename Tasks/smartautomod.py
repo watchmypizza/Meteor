@@ -20,6 +20,7 @@ FAST_BLOCK_PATTERNS = [
     re.compile(r"(?:https?://)?discord(?:\.gg|\.com/invite)/\w+", re.I),
     re.compile(r"\bfree\s+nitro\b", re.I),
     re.compile(r"@everyone|@here", re.I),
+    re.compile(r"cunt")
 ]
 
 OBFUSCATED_DISCORD_COM = re.compile(r"d[\W_]*i[\W_]*s[\W_]*c[\W_]*o[\W_]*r[\W_]*d[\W_]*(?:\.|dot)?[\W_]*c[\W_]*o[\W_]*m", re.I)
@@ -29,7 +30,8 @@ SELF_HARM_INCITE       = re.compile(r"\b(kys|kill\s*yourself|go\s*kill\s*yoursel
 
 ALLOW_OK_PATTERNS = [
     re.compile(r"^\s*(l+m+a*o+|l+o+l+|rofl|xd+)\s*$", re.I),
-    re.compile(r"^[\W_😀-🙏😂🤣😅👌✨💀🔥❤️👍🏽👍🏿👍🏻👍]*$", re.I),
+    re.compile(r"https://cdn.discordapp.com/"),
+    re.compile(r"https://tenor.com/view")
 ]
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
@@ -51,11 +53,15 @@ RESULT_CACHE_TTL = 90
 
 SYSTEM_PROMPT = (
     'Return ONLY one JSON object with all keys: {"label":"ok|delete","duration":null,"categories":[],"reason":""}\n'
-    "Rules:\n"
-    "- ok: normal chat, slang, memes, jokes, casual swearing not at a person.\n"
-    #"- warn: targeted harassment or severe profanity at a person (no slurs).\n"
-    "- delete: scam/spam/phishing domains.\n"
-    "- Always delete child pornography, extreme slurs (like the N word), and other bad things that shouldn be common knowledge."
+    "Guidelines:\n"
+    "- ok: normal chat, memes, venting, casual profanity, light self-directed insults, and ordinary links.\n"
+    #"- warn: targeted harassment that uses strong profanity at a person (e.g. 'you piece of...'), intimidation, or repeated boundary pushing without slurs; keep duration null.\n"
+    "- delete: extreme hate slurs (for example the N-word or F-slur), sexual content with minors, instructions to self-harm, credible death threats. targeted harassment that uses strong profanity at a person (e.g. 'you piece of...'), intimidation, or repeated boundary pushing without slurs; keep duration null.\n"
+    "- Scam/phishing includes Discord invites (discord.gg, discord.com/invite) or giveaway bait such as free nitro; do NOT treat unrelated links as scams.\n"
+    "- If ongoing harm continues after a warn, set label to mute and choose a short duration like 10m.\n"
+    "- Never label ok when the message tells someone to harm themselves (e.g. 'kys', 'die you...') or aggressively targets a person with profanity; choose warn or delete based on severity.\n"
+    "- Reasons should be short and specific (e.g. 'Extreme slur' or 'Discord phishing').\n"
+    "- Do not treat innocent words like aswell as slurs or extreme slurs."
 )
 
 def parse_duration(s: str|None, max_seconds: int = 7*86400) -> int|None:
