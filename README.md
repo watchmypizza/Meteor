@@ -32,6 +32,10 @@ Example Ticket System:
 
 <img src="./firebase-logo-vertical.png" alt="Firebase" width="64">
 
+- 🧠 AI Automod powered by Ollama
+
+<img src="./ollama.png" alt="Ollama" width="64">
+
 # Installation
 
 - Python 3.13 is required
