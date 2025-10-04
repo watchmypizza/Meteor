@@ -40,6 +40,10 @@ Example Ticket System:
 
 - Python 3.13 is required
 
+- Ollama and a model of your choice (Recommended for low end: Gemma3:4b)
+
+- For low-end hardware: `ollama serve` `ollama pull gemma3:4b`
+
 - `pip install -r requirements.txt`
 
 - Create a `JSONS/` folder, place your Firebase service account JSON inside it, and create a `.env` file in the project root.
