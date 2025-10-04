@@ -1,6 +1,7 @@
 import discord, re, time, json, hashlib, asyncio, aiohttp
+from datetime import datetime
 import datetime as dt
-from discord.ext import commands
+from discord.ext import commands, tasks
 from firebase_admin import credentials, firestore
 import firebase_admin
 import dotenv
@@ -53,7 +54,7 @@ SYSTEM_PROMPT = (
     "Rules:\n"
     "- ok: normal chat, slang, memes, jokes, casual swearing not at a person.\n"
     #"- warn: targeted harassment or severe profanity at a person (no slurs).\n"
-    "- delete: scam/spam/phishing domains. Included are discord domains like (discord.gg/xxxxxx) because these are invites. Legitemate links are (https://google.com/search?query=xxxxxxx-xxxxxxxxxxx, www.youtube.com/watch?url=xxxxxxxxxxx) whatever. Official domains you know are probably legitemate)\n"
+    "- delete: scam/spam/phishing domains.\n"
     "- Always delete child pornography, extreme slurs (like the N word), and other bad things that shouldn be common knowledge."
 )
 
@@ -97,6 +98,8 @@ class SmartAutoMod(commands.Cog):
         self._cb_fail_times = []
         self._cb_open_until = 0.0
         self._cache = {}
+        self.serverconfigcache: dict[str, dict] = {}
+        self.refresh_cache.start()
         self._last_use = time.time()
         asyncio.create_task(self._keepalive_loop())
 
@@ -139,11 +142,26 @@ class SmartAutoMod(commands.Cog):
                 pass
 
     async def get_guild_config(self, guild_id: str):
-        doc_ref = collection_ref.document(guild_id)
-        doc = doc_ref.get()
-        if doc.exists:
-            return doc.to_dict()
-        return {}
+       if guild_id == "-5":
+           configs = {}
+           for doc in collection_ref.stream():
+               configs[doc.id] = doc.to_dict()
+           return configs
+
+       snap = collection_ref.document(guild_id).get()
+       return snap.to_dict() if snap.exists else {}
+
+    @tasks.loop(minutes=1)
+    async def refresh_cache(self):
+        self.serverconfigcache = await self.get_guild_config("-5")
+        print(f"[SmartAutoMod] Serversettings cache updated at {datetime.now()}")
+    
+    @refresh_cache.before_loop
+    async def before_refresh(self):
+        await self.bot.wait_until_ready()
+
+    def cog_unload(self):
+        self.refresh_cache.cancel()
 
     async def _warm_ollama(self):
         payload = {
@@ -307,6 +325,9 @@ class SmartAutoMod(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, m: discord.Message):
         if m.guild is None or m.author.bot:
+            return
+        
+        if self.serverconfigcache[str(m.guild.id)]["ai_automod_enabled"] == "False":
             return
 
         if SELF_HARM_INCITE.search(m.content or ""):

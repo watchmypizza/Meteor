@@ -35,7 +35,8 @@ class configure(commands.Cog):
             "mod_logs": 0,
             "suggestion_channel": 0,
             "excluded_level_channels": [],
-            "prefix": ''
+            "prefix": '',
+            "ai_automod_enabled": "False"
         }
         await self.update_guild_config(guild_id, default)
         return default
@@ -246,6 +247,27 @@ class configure(commands.Cog):
         config["ticketlogs"] = channel.id
         await self.update_guild_config(guild_id, config)
         await interaction.response.send_message("Successfully set the ticket logs channel to {}!".format(channel.mention), ephemeral=True)
+
+    @configure_group.command(name="aiautomod", description="Enable or disable the AI automod")
+    @app_commands.describe(state="On or Off state")
+    @app_commands.choices(state=[
+        app_commands.Choice(name="On", value="True"),
+        app_commands.Choice(name="Off", value="False")
+    ])
+    async def aiautomod_subcommand(self, interaction: discord.Interaction, state: app_commands.Choice[str]):
+        if not await self._check_admin(interaction):
+            return
+        
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        if state.value == "True":
+            config["ai_automod_enabled"] = "True"
+            await self.update_guild_config(guild_id, config)
+            await interaction.response.send_message("Successfully enabled the AI automod.", ephemeral=True)
+        else:
+            config["ai_automod_enabled"] = "False"
+            await self.update_guild_config(guild_id, config)
+            await interaction.response.send_message("Successfully disabled the AI automood.", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(configure(bot))
