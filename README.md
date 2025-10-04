@@ -79,7 +79,7 @@ FIREBASE_JSON=Relative path to your firebase json (Example: JSONS/xxxxxxx-fireba
 
 [x] Tickets functionality (Replacing ticketbot)
 
-[ ] Smart automod (Using ollama)
+[x] Smart automod (Using ollama)
 
 [ ] Raid-preventive commands
 
