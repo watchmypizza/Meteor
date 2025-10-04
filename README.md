@@ -55,6 +55,19 @@ TOKEN=MTMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx (discord bot token)
 FIREBASE_JSON=Relative path to your firebase json (Example: JSONS/xxxxxxx-firebase-adminsdk-xxxxxxxxxx.json)
 ```
 
+# Quickstart
+
+```
+git clone https://github.com/watchmypizza/TuxBot.git
+cd TuxBot
+pip install -r requirements.txt
+ollama serve &
+ollama pull gemma3:4b
+touch .env
+mkdir JSONS/
+echo 'Thanks for downloading and using my project! If you enjoy working on my project, mind leaving a star:3?'
+```
+
 # Roadmap
 
 [x] Base functionality, running bot
@@ -92,6 +105,7 @@ FIREBASE_JSON=Relative path to your firebase json (Example: JSONS/xxxxxxx-fireba
 [ ] Raid-preventive commands
 
 > Have a suggestion? Join the [support server](https://discord.gg/eQ7FHcmHc9) and feel free to suggest your idea!
+> Report a bug? Join the [support server](https://discord.gg/eQ7FHcmHc9) and feel free to open a ticket! You can also open a github issue!
 
 <sub><sup>Suggestions are manually reviewed by the developer(s), who decide if they should be added.</sup></sub>
 

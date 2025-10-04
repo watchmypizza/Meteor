@@ -64,11 +64,14 @@ class ticketsystem(commands.Cog):
 
             button = Button(label="Report Member", style=ButtonStyle.red, custom_id="report_member")
             issue = Button(label="Verification issues", style=ButtonStyle.blurple, custom_id="verify_issue")
+            bug = Button(label="Report a bug", style=discord.ButtonStyle.green, custom_id="bug")
 
             button.callback = self.report_member_callback
             issue.callback = self.issue_callback
+            bug.callback = self.bug_callback
 
             self.add_item(button)
+            self.add_item(bug)
             self.add_item(issue)
         
         async def report_member_callback(self, interaction: discord.Interaction):
@@ -77,6 +80,11 @@ class ticketsystem(commands.Cog):
             await interaction.response.send_modal(modal)
         
         async def issue_callback(self, interaction: discord.Interaction):
+            generated_handle = self.bot.get_cog("ticketsystem").generate_ticket_handle()
+            modal = self.bot.get_cog("ticketsystem").issueReportModal(self.bot, generated_handle)
+            await interaction.response.send_modal(modal)
+        
+        async def bug_callback(self, interaction: discord.Interaction):
             generated_handle = self.bot.get_cog("ticketsystem").generate_ticket_handle()
             modal = self.bot.get_cog("ticketsystem").issueReportModal(self.bot, generated_handle)
             await interaction.response.send_modal(modal)
@@ -90,12 +98,19 @@ class ticketsystem(commands.Cog):
             issue = Button(label="Verification issues", style=ButtonStyle.blurple, custom_id="verify_issue")
 
             button.callback = self.report_member_callback
+            issue.callback = self.issue_callback
 
             self.add_item(button)
+            self.add_item(issue)
         
         async def report_member_callback(self, interaction: discord.Interaction):
             generated_handle = self.bot.get_cog("ticketsystem").generate_ticket_handle()
             modal = self.bot.get_cog("ticketsystem").userReportModal(self.bot, generated_handle)
+            await interaction.response.send_modal(modal)#
+        
+        async def issue_callback(self, interaction: discord.Interaction):
+            generated_handle = self.bot.get_cog("ticketsystem").generate_ticket_handle()
+            modal = self.bot.get_cog("ticketsystem").issueReportModal(self.bot, generated_handle)
             await interaction.response.send_modal(modal)
     
     class closeTicketView(View):
@@ -216,7 +231,7 @@ class ticketsystem(commands.Cog):
             await ticketlogs.send(staff_role.mention)
             await ticketlogs.send(embed=embed)
     
-    class issueReportModal(Modal, title="Report a issue"):
+    class issueReportModal(Modal, title="Report a bug"):
         def __init__(self, bot, generated_handle):
             super().__init__(timeout=None)
             self.bot = bot
