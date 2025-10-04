@@ -269,5 +269,37 @@ class configure(commands.Cog):
             await self.update_guild_config(guild_id, config)
             await interaction.response.send_message("Successfully disabled the AI automood.", ephemeral=True)
 
+    @configure_group.command(name="staffcategory", description="Add a staff category to the anti raid command.")
+    @app_commands.describe(operation="Add or remove from the list", category="The category to add/remove")
+    @app_commands.choices(operation=[
+        app_commands.Choice(name="Add", value="append"),
+        app_commands.Choice(name="Remove", value="remove")
+    ])
+    async def staffcat_subcommand(self, interaction: discord.Interaction, operation: app_commands.Choice[str], category: discord.CategoryChannel):
+        if not await self._check_admin(interaction):
+            return
+        
+        await interaction.response.defer()
+        guild_id = str(interaction.guild.id)
+        config = await self.get_guild_config(guild_id)
+        categories = list(config.get("staff_categories", []))
+        if operation.value == "append":
+            if category.id not in categories:
+                categories.append(category.id)
+                await interaction.response.send_message("Successfully added `{}` to the list.".format(category.name), ephemeral=True)
+            else:
+                await interaction.response.send_message("That category is already in the list.", ephemeral=True)
+                return
+        elif operation.value == "remove":
+            try:
+                categories.remove(category.id)
+                await interaction.response.send_message("Successfully removed `{}` from the list.".format(category.name), ephemeral=True)
+            except ValueError:
+                await interaction.response.send_message("That category isn't in the list.", ephemeral=True)
+                return
+
+        config["staff_categories"] = categories
+        await self.update_guild_config(guild_id, config)
+
 async def setup(bot):
     await bot.add_cog(configure(bot))

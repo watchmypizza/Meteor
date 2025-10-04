@@ -102,7 +102,9 @@ echo 'Thanks for downloading and using my project! If you enjoy working on my pr
 
 [x] Smart automod (Using ollama)
 
-[ ] Raid-preventive commands
+[x] Raid-preventive commands
+
+I'll add more to the roadmap, but for now we are done with basic commands. Always be prepared for more to come though!
 
 > Have a suggestion? Join the [support server](https://discord.gg/eQ7FHcmHc9) and feel free to suggest your idea!
 > Report a bug? Join the [support server](https://discord.gg/eQ7FHcmHc9) and feel free to open a ticket! You can also open a github issue!
@@ -149,6 +151,8 @@ The bot has a total of 48 commands (including sub-commands). This number may upd
 - (customprefix)newprefix →  Same as configuring a new prefix.
 
 - /configure aiautomod →  Enable or disable the AI automod for your server.
+
+- /configure staffcategory →  Configure the staff category for the anti-raid commands.
 
 </details>
 
@@ -223,6 +227,19 @@ The bot has a total of 48 commands (including sub-commands). This number may upd
 - /warnings <User> →  Shows the warnings for a user if they have any. (Looking at your own warnings does not require moderation privileges)
 
 - /removewarn <User> <Number> →  Remove a warning from a user, you can view the number of warnings of a specific user by executing above command.
+
+</details>
+
+<details>
+<summary>Raid Protection</summary>
+
+- /antiraid lock →  Locks the current channel down
+
+- /antiraid unlock →  Unlocks the current channel
+
+- /antiraid serverlock →  Lock all of the server's channels except specialized categories
+
+- /antiraid serverunlock →  Unlock all of the server's channel except specialized categories
 
 </details>
 
