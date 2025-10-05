@@ -18,7 +18,7 @@ Currently the bot has an amount of **51** commands. Though the number may vary e
 
 - 📈 XP & level system with roles and rank cards
 
-Example Rank Card: ![Example Rank Card](./example_rank_card.png "Example Rank Card")
+<img src="./example_rank_card.png" alt="Rank Card" width="256" height="128">
 
 - 🔢 Counting game
 
