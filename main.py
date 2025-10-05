@@ -8,7 +8,7 @@ import asyncio
 load_dotenv(".env")
 token = os.getenv("TOKEN")
 
-game = discord.Game(name="StormyXV on YouTube")
+game = discord.Game(name="Catching Meteors")
 DEFAULT_PREFIX = "$ "
 
 async def dynamic_prefix(bot: commands.Bot, message: discord.Message):
