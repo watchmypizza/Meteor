@@ -34,7 +34,7 @@ class welcomer(commands.Cog):
             return
         embed = discord.Embed(
             title=f"Welcome, {member.name}",
-            description=f"Welcome to Development Cave! {member.mention}",
+            description=f"Welcome to {member.guild.name}! {member.mention}",
             color=discord.Color.random()
         )
         url = member.avatar.url if member.avatar else str(member.default_avatar)
