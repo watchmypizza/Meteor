@@ -111,11 +111,85 @@ $ wall "Community update at 6pm UTC"
             <button class="btn secondary copy" data-copy="pip install -r requirements.txt">Copy</button>
 pip install -r requirements.txt
           </div>
+          </article>
+        <article class="card">
+          <h3>AI Moderation with Ollama</h3>
           <ul>
             <li>If you do not have ollama installed, you can download it here:</li>
             <a class="btn secondary ollama" href="https://www.ollama.com" target="_blank" rel="noopener">Ollama Download</a>
+            <h1></h1>
+            <li>After installing Ollama, we have to install the model. We will use <code>gemma3:4b</code> for this</li>
           </ul>
-          </article>
+          <div class="code">
+            <button class="btn secondary copy" data-copy="ollama serve &">Copy</button>
+ollama serve &
+ollama pull gemma3:4b
+          </div>
+          <ul>
+            <h1>Please keep in mind, the next steps are optional and not required.</h1>
+            <li><code>ollama serve</code> has to keep running in the background so it is active. This is default for windows, on linux you can activate a service so it starts on system-startup.</li>
+            <h1></h1>
+            <li>We first of all need to create a user and usergroup for ollama</li>
+          </ul>
+          <div class="code">
+            <button class="btn secondary copy" data-copy="sudo useradd -r -s /bin/false -U -m -d /usr/share/ollama ollama
+sudo usermod -a -G ollama $(whoami)">Copy</button>
+sudo useradd -r -s /bin/false -U -m -d /usr/share/ollama ollama
+sudo usermod -a -G ollama $(whoami)
+          </div>
+          <ul>
+            <li>After we have added the user and usergroup for ollama, we will create the service file</li>
+          </ul>
+          <div class="code">
+            <button class="btn secondary copy" data-copy="sudo touch /etc/systemd/system/ollama.service">Copy</button>
+sudo touch /etc/systemd/system/ollama.service
+          </div>
+          <ul>
+            <li>We now have to write to the service file the following content</li>
+          </ul>
+          <div class="code">
+            <button class="btn secondary copy" data-copy="[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ollama serve
+User=ollama
+Group=ollama
+Restart=always
+RestartSec=3
+Environment="PATH=$PATH"
+
+[Install]
+WantedBy=multi-user.target">Copy</button>
+[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ollama serve
+User=ollama
+Group=ollama
+Restart=always
+RestartSec=3
+Environment="PATH=$PATH"
+
+[Install]
+WantedBy=multi-user.target
+          </div>
+          <ul>
+            <li>We now have to start the service after creating it with the following command</li>
+          </ul>
+          <div class="code">
+            <button class="btn secondary copy" data-copy="sudo systemctl daemon-reload
+sudo systemctl enable ollama">Copy</button>
+sudo systemctl daemon-reload
+sudo systemctl enable ollama
+          </div>
+          <ul>
+            <li>You should now be all set to use the AI Moderation feature!</li>
+          </ul>
+        </article>
         <article class="card">
           <h3>Environment</h3>
           <p>Create <code>.env</code> in project root:</p>
