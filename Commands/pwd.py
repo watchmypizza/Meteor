@@ -8,7 +8,7 @@ class pwdCog(commands.Cog):
 
     @commands.command()
     async def pwd(self, ctx):
-        await ctx.send(f"/home/Tux/")
+        await ctx.send(f"/home/Meteor/")
 
 async def setup(bot):
     await bot.add_cog(pwdCog(bot))
