@@ -38,7 +38,7 @@ a{color:inherit;text-decoration:none}
 .btn:active{transform:translateY(0)}
 .btn.primary{background:linear-gradient(135deg,var(--lav),var(--plum));box-shadow:var(--shadow); border: transparent;}
 .btn.secondary{background:linear-gradient(135deg,#222,rgba(255,255,255,.08));border-color:var(--border)}
-.btn.secondary.ollama{position: absolute; margin-left: 7cm; margin-top: -5px;}
+.btn.secondary.ollama{margin-top: 15px}
 .btn.orange{background:linear-gradient(135deg,var(--orange),#d87402);animation:floaty 6s ease-in-out infinite}
 
 header.nav{
