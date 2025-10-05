@@ -58,14 +58,12 @@ class levelsystem(commands.Cog):
         server_id = str(message.guild.id)
         user_id = str(message.author.id)
         
-        # Load data
         levels_data = await self.get_levels(server_id)
         config_data = await self.get_server_configs(server_id)
 
         if message.channel.id in config_data["excluded_level_channels"]:
             return
 
-        # Ensure user exists
         if user_id not in levels_data:
             levels_data[user_id] = {"xp": 0, "level": 0, "xp_needed": 50, "level_lock": False, "total_xp": 0}
 
@@ -78,7 +76,6 @@ class levelsystem(commands.Cog):
         if levels_data[user_id]["level_lock"] == True:
             return
 
-        # Add XP
         leveled_up = False
         levels_data[user_id]["xp"] += 5
         levels_data[user_id]["total_xp"] += 5
@@ -237,10 +234,10 @@ class levelsystem(commands.Cog):
         height: int = 200,
     ) -> BytesIO:
         bg = (30, 34, 39, 255)            # dark slate
-        accent = (38, 195, 195, 255)      # teal
+        accent = (9, 64, 116, 255)        # teal
         light = (241, 244, 247, 255)      # near white
         mid = (50, 55, 62, 255)           # card inner
-        line = (9, 64, 116, 255)          # progress bar
+        line = (38, 195, 195, 255)        # progress bar
         white = (255, 255, 255, 255)
 
         im = Image.new("RGBA", (width, height), bg)
