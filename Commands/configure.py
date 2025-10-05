@@ -279,7 +279,6 @@ class configure(commands.Cog):
         if not await self._check_admin(interaction):
             return
         
-        await interaction.response.defer()
         guild_id = str(interaction.guild.id)
         config = await self.get_guild_config(guild_id)
         categories = list(config.get("staff_categories", []))
