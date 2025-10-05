@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meteor – All-in-One Discord Bot</title>
+  <meta name="description" content="Meteor is an open-source, all-in-one Discord bot for moderation, levels, counting, tickets, AI automod, and raid protection." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="mx row">
+      <a class="brand" href="#top">
+        <span class="logo" aria-label="Meteor logo"></span>
+        <span>Meteor</span>
+      </a>
+      <nav class="links">
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+        <a href="#commands">Commands</a>
+        <a href="#support">Support</a>
+        <a class="btn secondary" href="https://github.com/watchmypizza/Meteor" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="mx">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="grid">
+        <div>
+          <span class="pill">$ UNIX-inspired commands • Open Source</span>
+          <h1 class="tagline">All-in-one Discord bot for moderation, levels, tickets & more.</h1>
+          <p class="sub">Smart automod powered by local LLMs (Ollama), per-server config via Firestore, and robust anti-raid tools. Built for speed, clarity, and control.</p>
+          <div class="actions">
+            <a class="btn primary" href="https://discord.com/oauth2/authorize?client_id=1392608420556833030" target="_blank" rel="noopener">Add to Discord</a>
+            <a class="btn orange" href="#quickstart">Quickstart</a>
+            <a class="btn secondary" href="#install">Install Guide</a>
+          </div>
+          <div class="badges">
+            <span class="pill">Python 3.13</span>
+            <span class="pill">Ollama-ready</span>
+            <span class="pill">GPL-2.0</span>
+          </div>
+        </div>
+        <div class="hero-img card">
+          <div>
+            <div style="font-size:14px;opacity:.9;margin-bottom:8px">Sample UNIX-style commands</div>
+            <div class="code" id="codeHero">
+$ rm -rf @user --message "rule x broken"
+$ usermod -l "cool-nickname" @user
+$ wall "Community update at 6pm UTC"
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="kicker">Why Meteor</div>
+      <h2 class="h2">Packed with essentials — no extra fluff</h2>
+      <div class="grid features">
+        <article class="card feature">
+          <div class="icon">🛡️</div>
+          <h3>Moderation</h3>
+          <p>Kick, ban, purge, warn, and more — with clear logs and server-safe defaults.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon">📈</div>
+          <h3>Levels & XP</h3>
+          <p>Role rewards, leaderboards, and level cards to keep your community engaged.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon">🔢</div>
+          <h3>Counting</h3>
+          <p>Dedicated counting channel with no-fail mode, resets, and guardrails.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon">🎟️</div>
+          <h3>Tickets</h3>
+          <p>Button-based ticket flows and staff tools for clean, efficient support.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon">🤖</div>
+          <h3>AI Automod</h3>
+          <p>Local LLM moderation via Ollama for privacy-first, low-latency filtering.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon">🚨</div>
+          <h3>Raid Protection</h3>
+          <p>One-tap channel/server lock with smart category exceptions.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="install" class="section">
+      <div class="kicker">Install</div>
+      <h2 class="h2">Set up in minutes</h2>
+      <div class="grid two-col">
+        <article class="card">
+          <h3>Requirements</h3>
+          <ul>
+            <li>Python 3.13</li>
+            <li>Ollama + model (e.g. <code>gemma3:4b</code>)</li>
+            <li>Firebase service account JSON</li>
+          </ul>
+          <div class="code">
+            <button class="btn secondary copy" data-copy="pip install -r requirements.txt">Copy</button>
+pip install -r requirements.txt
+          </div>
+        </article>
+        <article class="card">
+          <h3>Environment</h3>
+          <p>Create <code>.env</code> in project root:</p>
+          <div class="code">
+            <button class="btn secondary copy" data-copy="TOKEN=YOUR_DISCORD_BOT_TOKEN
+FIREBASE_JSON=JSONS/your-service-account.json">Copy</button>
+TOKEN=YOUR_DISCORD_BOT_TOKEN
+FIREBASE_JSON=JSONS/your-service-account.json
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="quickstart" class="section">
+      <div class="kicker">Quickstart</div>
+      <h2 class="h2">Clone & run</h2>
+      <article class="card">
+        <div class="code">
+          <button class="btn secondary copy" data-copy="git clone https://github.com/watchmypizza/Meteor.git
+cd Meteor
+pip install -r requirements.txt
+ollama serve &
+ollama pull gemma3:4b
+touch .env
+mkdir JSONS/
+echo 'Thanks for downloading and using my project! If you enjoy working on my project, mind leaving a star:3?'">Copy</button>
+git clone https://github.com/watchmypizza/Meteor.git
+cd Meteor
+pip install -r requirements.txt
+ollama serve &
+ollama pull gemma3:4b
+touch .env
+mkdir JSONS/
+echo 'Thanks for downloading and using my project! If you enjoy working on my project, mind leaving a star:3?'
+        </div>
+      </article>
+    </section>
+
+    <section id="commands" class="section">
+      <div class="kicker">Commands</div>
+      <h2 class="h2">Everything you need, neatly grouped</h2>
+      <div class="accordion">
+        <details class="acc">
+          <summary>Configuration</summary>
+          <div>
+            <ul>
+              <li><code>/configure levelroles</code> – manage level roles</li>
+              <li><code>/configure logging</code> – choose a log channel</li>
+              <li><code>/configure welcomer</code> – welcome/goodbye messages</li>
+              <li><code>/configure announcement</code> – set announcement channel for <code>$ wall</code></li>
+              <li><code>/configure modlogs</code> – dedicated moderation logs</li>
+              <li><code>/configure botrole</code> – role to exclude from member counts</li>
+              <li><code>/configure suggestions</code> – auto-react ✅/❌</li>
+              <li><code>/configure verifiedrole</code> – set verified role</li>
+              <li><code>/configure level_channel</code> – level-up announcements</li>
+              <li><code>/configure prefix</code> & <code>/configure resetprefix</code></li>
+              <li><code>/configure aiautomod</code> – toggle AI automod</li>
+              <li><code>/configure staff</code>, <code>/configure ticketlogs</code>, <code>/configure staffcategory</code></li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="acc">
+          <summary>Counting</summary>
+          <div>
+            <ul>
+              <li><code>/counting configure</code>, <code>/counting channel</code> (required)</li>
+              <li><code>/counting start</code>, <code>/counting stop</code> (pause), <code>/counting reset</code></li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="acc">
+          <summary>Levels</summary>
+          <div>
+            <ul>
+              <li><code>/level show</code>, <code>/level leaderboard</code></li>
+              <li><code>/level lock</code>, <code>/level set</code>, <code>/level exclude</code></li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="acc">
+          <summary>Miscellaneous</summary>
+          <div>
+            <ul>
+              <li><code>$ ls</code>, <code>$ cat</code>, <code>$ pwd</code>, <code>$ man</code>, <code>$ wall</code></li>
+              <li><code>/latency</code>, <code>/membercount</code>, <code>/slash</code></li>
+              <li><code>/suki</code>, <code>/warnings</code>, <code>/verify</code></li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="acc">
+          <summary>Raid Protection & Tickets</summary>
+          <div>
+            <ul>
+              <li><code>/antiraid lock</code>, <code>/antiraid unlock</code>, <code>/antiraid serverlock</code>, <code>/antiraid serverunlock</code></li>
+              <li><code>/ticketsystem setup</code>, <code>/ticketsystem category</code>, <code>/ticketsystem close</code></li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="support" class="section">
+      <div class="kicker">Community</div>
+      <h2 class="h2">Need help? Got a feature idea?</h2>
+      <article class="card" style="display:grid;gap:12px">
+        <p class="sub">Join the support server to suggest features, report bugs, or just say hi. You can also open a GitHub issue.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://discord.gg/eQ7FHcmHc9" target="_blank" rel="noopener">Support Server</a>
+          <a class="btn secondary" href="https://github.com/watchmypizza/Meteor/issues" target="_blank" rel="noopener">Open an Issue</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="mx row">
+      <div class="brand"><span class="logo"></span> Meteor</div>
+      <div>Free & open-source • GPL-2.0</div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
