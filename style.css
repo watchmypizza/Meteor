@@ -36,8 +36,9 @@ a{color:inherit;text-decoration:none}
 .btn{display:inline-flex;align-items:center;gap:.6rem;border-radius:12px;padding:.9rem 1.1rem;font-weight:700;letter-spacing:.2px;border:1px solid transparent;transition:transform .12s ease, box-shadow .3s ease, background .3s ease, filter .3s ease}
 .btn:hover{transform:translateY(-1px)}
 .btn:active{transform:translateY(0)}
-.btn.primary{background:linear-gradient(135deg,var(--lav),var(--plum));box-shadow:var(--shadow)}
+.btn.primary{background:linear-gradient(135deg,var(--lav),var(--plum));box-shadow:var(--shadow); border: transparent;}
 .btn.secondary{background:linear-gradient(135deg,#222,rgba(255,255,255,.08));border-color:var(--border)}
+.btn.secondary.ollama{position: absolute; margin-left: 7cm; margin-top: -5px;}
 .btn.orange{background:linear-gradient(135deg,var(--orange),#d87402);animation:floaty 6s ease-in-out infinite}
 
 header.nav{
@@ -50,9 +51,8 @@ header.nav{
 .brand{display:flex;align-items:center;gap:.75rem;font-weight:800}
 .logo{
   inline-size:40px;block-size:40px;border-radius:10px;display:inline-block;
-  border:2px solid rgba(255,255,255,.25);box-shadow:0 8px 24px rgba(128,117,255,.25);
-  background:url('logo.gif') center/cover no-repeat,
-             conic-gradient(from 210deg, var(--lemon), var(--orange), var(--lav), var(--plum));
+  border:2px solid rgba(25, 0, 255, 0.651);box-shadow:0 8px 24px rgba(25, 4, 255, 0.418);
+  background:url('logo.gif') center/cover no-repeat;
   overflow:hidden;
 }
 .nav a{opacity:.9}
