@@ -24,7 +24,7 @@ Currently the bot has an amount of **51** commands. Though the number may vary e
 
 - 🎟️ Ticket system with buttons
 
-<img src="./example_ticket_system.png" alt="Ticket System" width="512" height="256">
+<img src="./example_ticket_system.png" alt="Ticket System" width="648" height="256">
 
 - ⚙️ Per-server configuration (powered by Firestore)
 
