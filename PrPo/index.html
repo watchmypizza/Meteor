@@ -1,101 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Meteor - Privacy Policy</title>
-  <link rel="icon" type="image/x-icon" href="favicon.png">
-  <meta name="description" content="Meteor is an open-source, all-in-one Discord bot for moderation, levels, counting, tickets, AI automod, and raid protection." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="Privacy Policy for the Meteor Discord bot." />
+  <link rel="canonical" href="https://watchmypizza.github.io/Meteor/PrPo/" />
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;line-height:1.6;margin:0;padding:0;background:#0b0b10;color:#e9edf1}
+    main{max-width:860px;margin:0 auto;padding:24px}
+    h1,h2,h3{line-height:1.2;margin:1.2em 0 .3em}
+    a{color:#8ec7ff;text-decoration:none} a:hover{text-decoration:underline}
+    header,footer{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .badge{opacity:.8}
+    hr{border:0;border-top:1px solid #21222a;margin:24px 0}
+    ul{padding-left:1.2em}
+    .muted{color:#a8b0b9}
+    code{background:#12131a;border:1px solid #1f2230;padding:.1em .35em;border-radius:6px}
+  </style>
 </head>
 <body>
-  <header class="nav">
-    <div class="mx row">
-      <a class="brand" href="#top">
-        <span class="logo" aria-label="Meteor logo"></span>
-        <span>Meteor - Grabbing the Stars</span>
-      </a>
-      <nav class="links">
-        <a href="../index.html">Back</a>
-        <a class="btn secondary" href="https://github.com/watchmypizza/Meteor" target="_blank" rel="noopener">GitHub ↗</a>
-      </nav>
-    </div>
+<main>
+  <header>
+    <a href="../" aria-label="Home">Meteor - Grabbing the Stars</a>
+    <nav>
+      <a href="../TOS/">Terms</a> ·
+      <a href="./">Privacy</a> ·
+      <a class="badge" href="https://github.com/watchmypizza/Meteor">GitHub ↗</a>
+    </nav>
   </header>
 
-  <main id="top" class="mx">
-    <section class="hero">
-      <div class="grid">
-        <div>
-          <h1 class="tagline">Privacy Policy</h1>
-          <p class="sub">The Privacy Policy for the Discord bot "Meteor"</p>
-        </div>
-      </div>
-    </section>
+  <h1>Privacy Policy</h1>
+  <p class="muted">Last updated: October 7, 2025</p>
 
-    <section id="support" class="section">
-      <article class="card">
-        <h1>Privacy Policy</h1>
-        <h3>Last Updated: October 7, 2025</h3>
-        <div class="code">
-1. Data Collection
+  <p>This Privacy Policy explains how <strong>Meteor</strong> handles data when used on Discord servers.</p>
 
-Meteor does not collect, sell, or share personal user data for analytics, advertising, or profiling purposes.
-The Bot may temporarily access or store the following types of information:
-Configuration data (e.g., moderation settings, ticket channels, level data).
-Server IDs, channel IDs, and user IDs strictly for bot functionality.
-Leveling and moderation logs, when explicitly configured by the server owner.
+  <h2>1) Summary</h2>
+  <p>Meteor does <strong>not</strong> collect, sell, or share personal data for analytics, advertising, or profiling. It stores only the minimum configuration needed for features you enable (e.g., moderation settings, level data).</p>
 
-No message content or personal conversations are collected or analyzed beyond what is necessary for
-moderation commands or automod features.
+  <h2>2) What Data May Be Processed</h2>
+  <ul>
+    <li><strong>Configuration:</strong> moderation settings, ticket channels, level/XP data, feature toggles.</li>
+    <li><strong>Identifiers:</strong> server, channel, role, and user IDs strictly for bot functionality.</li>
+    <li><strong>Optional logs:</strong> moderation or leveling logs when you explicitly enable them.</li>
+  </ul>
+  <p>No message content is analyzed or stored beyond what is necessary to execute commands or automod actions you trigger.</p>
 
-2. Configuration Data
+  <h2>3) Limited Developer Access</h2>
+  <p>The Developer may access stored configuration or leveling data <em>only</em> in limited cases for:</p>
+  <ul>
+    <li>Troubleshooting and fixing broken data or restoring data on request,</li>
+    <li>Investigating abuse or violations of these Terms or Discord rules,</li>
+    <li>Maintenance and data migrations.</li>
+  </ul>
+  <p>Any such access is minimal, for operational purposes only, and never for monetization or profiling.</p>
 
-Some server-side configurations (e.g., moderation settings, ticket categories, or leveling data)
-may be stored in Firebase or other databases only if the server administrator sets this up.
+  <h2>4) AI Usage (Local Only)</h2>
+  <p>Meteor’s AI features use <strong>local inference</strong> (e.g., Ollama). Data used for AI moderation is processed on the host where the bot runs and is not sent to third-party AI APIs or cloud services. AI outputs are generated in real time and are not retained beyond what is necessary to perform the action.</p>
 
-3. Use of AI
+  <h2>5) Third-Party Services</h2>
+  <p>If you connect Meteor to a third party (e.g., <code>Firebase</code>), those services process data under their own policies and terms. Configure them responsibly and review their documentation.</p>
 
-Meteor may use local AI models (e.g., Ollama) for moderation or automod tasks.
-These models run entirely locally and do not send data to external APIs.
-AI outputs are generated in real-time and are not logged or analyzed.
+  <h2>6) Data Security</h2>
+  <p>Reasonable technical and organizational measures are used to protect stored configuration data. If you self-host, you are responsible for securing your instance, secrets, and infrastructure.</p>
 
-4. Third-Party Services
+  <h2>7) Retention & Deletion</h2>
+  <ul>
+    <li>Data is retained only as long as needed for active features.</li>
+    <li>Server owners can request deletion. Removing the bot <em>and</em> contacting the Developer will trigger deletion of stored configuration associated with that server.</li>
+  </ul>
 
-If your server connects Meteor to third-party services (e.g., Firebase), their respective privacy policies apply.
-The Developer is not responsible for those services.
+  <h2>8) Children’s Privacy</h2>
+  <p>Meteor is not directed to children under 13 and must be used consistent with Discord’s age requirements.</p>
 
-5. Data Security
+  <h2>9) Changes</h2>
+  <p>This Policy may be updated periodically. Continued use after updates constitutes acceptance of the revised Policy.</p>
 
-Meteor is open source, and anyone running the Bot is responsible for their own instance security.
-The official public instance does not log message content or personal information.
+  <h2>10) Contact</h2>
+  <p>Questions or data requests: open an issue on <a href="https://github.com/watchmypizza/Meteor/issues">GitHub Issues</a>.</p>
 
-6. Children's Privacy
+  <p class="muted">
+    See also: <a href="https://discord.com/terms" target="_blank" rel="noopener">Discord Terms of Service</a> ·
+    <a href="https://discord.com/guidelines" target="_blank" rel="noopener">Discord Community Guidelines</a> ·
+    <a href="https://github.com/watchmypizza/Meteor/blob/main/LICENSE" target="_blank" rel="noopener">GPL-2.0 License</a>
+  </p>
 
-Meteor is not directed toward children under 13. Users must comply with Discord's minimum age requirements.
-
-7. Changes to This Policy
-
-This Privacy Policy may be updated occasionally.
-Continued use of the Bot after any change constitutes acceptance of the updated policy.
-        </div>
-        <a class="btn secondary ollama" href="https://discord.com/terms" target="_blank" rel="noopener">Discord ToS</a>
-        <a class="btn secondary ollama" href="https://discord.com/guidelines" target="_blank" rel="noopener">Discord Guidelines</a>
-        <a class="btn secondary ollama" href="https://github.com/watchmypizza/Meteor/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-      </article>
-  </section>
-
-  </main>
-
-  <footer class="footer">
-    <div class="mx row">
-      <div class="brand"><span class="logo"></span> Meteor - Grabbing the Stars</div>
-      <div>Free & open-source • GPL-2.0</div>
-    </div>
+  <hr />
+  <footer>
+    <small class="muted">Free & open-source • GPL-2.0</small>
   </footer>
-
-  <script src="script.js"></script>
+</main>
 </body>
 </html>
