@@ -333,7 +333,10 @@ class SmartAutoMod(commands.Cog):
         if m.guild is None or m.author.bot:
             return
         
-        if self.serverconfigcache[str(m.guild.id)]["ai_automod_enabled"] == "False":
+        try:
+            if self.serverconfigcache[str(m.guild.id)]["ai_automod_enabled"] == "False":
+                return
+        except KeyError:
             return
 
         if SELF_HARM_INCITE.search(m.content or ""):

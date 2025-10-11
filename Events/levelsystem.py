@@ -61,7 +61,10 @@ class levelsystem(commands.Cog):
         levels_data = await self.get_levels(server_id)
         config_data = await self.get_server_configs(server_id)
 
-        if message.channel.id in config_data["excluded_level_channels"]:
+        try:
+            if message.channel.id in config_data["excluded_level_channels"]:
+                return
+        except KeyError:
             return
 
         if user_id not in levels_data:

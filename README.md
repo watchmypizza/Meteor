@@ -104,6 +104,10 @@ echo 'Thanks for downloading and using my project! If you enjoy working on my pr
 
 [x] Raid-preventive commands
 
+[x] Blacklisting System
+
+[ ] Customisable ticket buttons
+
 [ ] Binaries for windows & linux to just use it for your own bot
 
 I'll add more to the roadmap, but for now we are done with basic commands. Always be prepared for more to come though!
