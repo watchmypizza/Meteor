@@ -103,7 +103,7 @@ details.acc > summary{cursor:pointer;list-style:none;padding:16px 18px;font-weig
 details.acc[open]{background:rgba(255,255,255,.06)}
 details.acc > div{padding:0 18px 18px}
 
-.footer{padding:48px 0;border-top:1px solid var(--border);color:#c4c9d4;margin-top: 29rem;} /* remove margin once the bot is recoded in c# */
+.footer{padding:48px 0;border-top:1px solid var(--border);color:#c4c9d4; position: absolute; left: 0; right: 0; bottom: 0;}
 .footer .row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
